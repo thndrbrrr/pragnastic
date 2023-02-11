@@ -26,8 +26,10 @@
   - backup repos are encrypted
   - data disks are encrypted
 - **Email notifications**
-    - when backups fail
-    - when data RAID is degraded
+  - when backups fail
+  - when data RAID is degraded
+- **Pragmatic**
+  - gets the job done
   
 
 ### Backups
