@@ -1,0 +1,7 @@
+include common
+
+root = /Users/bob.smith/TDrive
+root = ssh://bob@example.com//vol/data/bob/syncdrive
+
+path      = Path Work
+ignore    = Path Work/Archive

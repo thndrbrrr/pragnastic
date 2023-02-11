@@ -29,7 +29,7 @@
   - when backups fail
   - when data RAID is degraded
 - **Pragmatic**
-  - gets the job done
+  - no frills, bells, or whistles, but gets the job done
   
 
 ### Backups
@@ -54,6 +54,70 @@
 - backup retention for server directories: last 30 daily backups
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Installation
+
+TBDocumented
+
+### Server
+
+TBDocumented
+
+#### Prepare disks
+
+**Backup disks**
+
+For each backup disk:
+
+```sh
+fdisk -g sdX
+
+disklabel -Eh sdX
+  sdX> z # delete all partitions
+  sdX*> a a
+  offset: [...]
+  size: [...]
+  FS type: [4.2BSD]
+  sdX*> q
+
+newfs /dev/rsdXa
+```
+
+**Data disks**
+
+For each data disk:
+
+```sh
+# Erase any previous softraid params
+dd if=/dev/zero of=/dev/rsdXc bs=1m count=8 
+
+# Write GPT
+fdisk -g sdX
+
+echo 'RAID 1M-* 100%' >disklabel_raid_template
+disklabel -wAT disklabel_raid_template sdX
+```
+
+
+**Data softraid**
+
+```sh
+bioctl -c 1C -l /dev/sdXa,/dev/sdYa softraid0
+
+# Assuming softraid is now on /dev/sdZ
+dd if=/dev/zero of=/dev/rsdZc bs=1m count=1
+fdisk -g sdZ
+printf "a\n\n\n\n4.2BSD\nw\nq\n" | disklabel -E sdZ
+newfs /dev/rsdZa
+```
+
+### macOS
+
+TBDocumented
+
+### Windows
+
+TBDocumented
 
 ## Contributing
 
@@ -89,8 +153,17 @@ In the end, everyone stands on the shoulders of giants.
 * [Unison File Synchronizer](https://github.com/bcpierce00/unison)
 * [Restic](https://restic.net/)
 * [OpenSSH](https://www.openssh.com/)
+* [macFUSE](https://osxfuse.github.io/)
+* [SSHFS](https://github.com/osxfuse/sshfs)
+* [SSHFS-Win](https://github.com/winfsp/sshfs-win)
 * [OpenBSD](https://www.openbsd.org/)
 * [Stack Overflow](https://stackoverflow.com/)
-* [Othneil Drew](https://github.com/othneildrew)
+* Readme based on a template by [Othneil Drew](https://github.com/othneildrew)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+--------
+
+<div align="center">
+Copyright (c) 2023 <a href="mailto:thndrbrrr@gmail.com">thndrbrrr@gmail.com</a>
+</div>

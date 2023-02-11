@@ -1,0 +1,2 @@
+PRAGNASTIC_CLIENT_DIR=/some/path/to/pragnastic/client/macos
+* * * * * $PRAGNASTIC_CLIENT_DIR/pragnastic-syncdrive.sh >>$HOME/.pragnastic.syncdrive.log 2>&1
