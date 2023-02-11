@@ -1,12 +1,12 @@
 <a name="readme-top"></a>
 
 <div align="center">
-<h1>PragNAStic<h1>
-<h2>Network-attached storage with integrated backups</h2>
+<h2>PragNAStic<h2>
+<h3>Network-attached storage with integrated backups</h2>
 <h3>Safe • Secure • Flexible</h3>
 </div>
 
-<p><img src="docs/images/overview.png"/></p>
+<p align="center"><img src="docs/images/overview.png"/></p>
 
 ## Features
 
