@@ -2,9 +2,11 @@
 
 <div align="center">
 <h3>PragNAStic</h3>
-<p><b>Network-attached storage with integrated backup</b></p>
-<p><em>Safe • Secure • Flexible</em></p>
+<p><b>Network-attached storage with integrated backup</b><br/>
+Safe • Secure • Flexible</p>
 </div>
+
+## Overview
 
 <p align="center"><img src="docs/images/overview.png"/></p>
 
@@ -14,7 +16,7 @@
   - **SyncDrive:** local directory that's synced every minute with the server and is available offline (pretty much like Google Drive), also supports syncing with multiple computers (Windows and macOS supported)
   - **NetDrive:** classic network drive (only available when connected)
   - **SharedDrive:** like NetDrive, but shared between all users
-- **Safety through redundancy**
+- **Safety through redundancy and backups**
     - two powered USB hubs, each connecting one data disk and one backup disk
     - two data disks operating as an encrypted RAID 1 (mirroring)
     - two backup disks, each containing an independant encrypted backup repo
