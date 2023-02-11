@@ -18,3 +18,4 @@ node_modules
 __pycache__
 __pypackages__
 /var/log/.cache
+.fuse_hidden*
