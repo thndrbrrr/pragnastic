@@ -8,7 +8,7 @@ Safe • Secure • Flexible</p>
 
 ## Overview
 
-<p align="center"><img src="docs/images/overview.png"/></p>
+<p align="center"><img src="docs/images/overview_diagram.png"/></p>
 
 ## Features
 
