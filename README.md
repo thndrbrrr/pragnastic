@@ -172,5 +172,5 @@ In the end, everyone stands on the shoulders of giants.
 --------
 
 <div align="center">
-Copyright (c) 2023 <a href="mailto:thndrbrrr@gmail.com">thndrbrrr@gmail.com</a>
+Copyright (c) 2023 <a href="mailto:thndrbrrr@gmail.com">thndrbrrr</a>
 </div>
