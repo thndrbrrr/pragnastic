@@ -59,11 +59,9 @@
 
 TBDocumented
 
-### Server
+### Prepare disks
 
-TBDocumented
-
-#### Prepare disks
+This assumes you're doing this with OpenBSD.
 
 **Backup disks**
 
@@ -98,7 +96,6 @@ echo 'RAID 1M-* 100%' >disklabel_raid_template
 disklabel -wAT disklabel_raid_template sdX
 ```
 
-
 **Data softraid**
 
 ```sh
@@ -109,6 +106,14 @@ dd if=/dev/zero of=/dev/rsdZc bs=1m count=1
 fdisk -g sdZ
 printf "a\n\n\n\n4.2BSD\nw\nq\n" | disklabel -E sdZ
 newfs /dev/rsdZa
+```
+
+### Server
+
+TBDocumented
+
+```sh
+install.sh
 ```
 
 ### macOS
