@@ -1,6 +1,6 @@
 include common
 
-root = /Users/bob.smith/TDrive
+root = /Users/bob.smith/SyncDrive
 root = ssh://bob@example.com//vol/data/bob/syncdrive
 
 path      = Path Work
