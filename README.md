@@ -1,9 +1,9 @@
 <a name="readme-top"></a>
 
 <div align="center">
-<h3>PragNAStic<h3>
-<p>**Network-attached storage with integrated backup**</p>
-<p>Safe • Secure • Flexible</p>
+<h3>PragNAStic</h3>
+<p><b>Network-attached storage with integrated backup</b></p>
+<p><em>Safe • Secure • Flexible</em></p>
 </div>
 
 <p align="center"><img src="docs/images/overview.png"/></p>
