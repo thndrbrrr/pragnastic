@@ -73,7 +73,7 @@ Distributed under the ISC license. See [`LICENSE`](LICENSE) for more information
 
 ## Contact
 
-Mail: torben@sdf.org
+Mail: thndrbrrr@gmail.com
 
 Mastodon: [@torben@mastodon.sdf.org](https://mastodon.sdf.org/@torben)
 
