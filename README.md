@@ -2,7 +2,7 @@
 
 <div align="center">
 <h2>PragNAStic<h2>
-<h3>Network-attached storage with integrated backups</h2>
+<h3>Network-attached storage with integrated backup</h2>
 <h3>Safe • Secure • Flexible</h3>
 </div>
 
