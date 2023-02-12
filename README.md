@@ -170,7 +170,7 @@ sysctl hw.disknames
 # > data0 disk id: af86c1eb22937213
 # > data1 disk id: 48c10d87b7518288
 # > data RAID password (input is not shown): 
-# > send notifications to (leave empty to disable): alice@example.com
+# > notification recipient's email (leave empty to disable): alice@example.com
 # > 
 # > Installing PragNAStic with this config:
 # >   backup0 disk id: a8277f65926ca1e8
@@ -179,7 +179,7 @@ sysctl hw.disknames
 # >   data0 disk id: af86c1eb22937213
 # >   data1 disk id: 48c10d87b7518288
 # >   data RAID password: ****
-# >   notifications recipient: alice@example.com
+# >   notification recipient: alice@example.com
 # > Proceed? [y/N] y
 # > done
 ```
