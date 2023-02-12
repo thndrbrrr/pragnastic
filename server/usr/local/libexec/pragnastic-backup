@@ -4,7 +4,7 @@
 . /etc/pragnastic/pragnastic.subr
 
 PID=$$
-BACKUP_PATH=$1
+BACKUP_PATH=`echo "${1%/}"`  # strip any trailing path separator
 [ -n "$BACKUP_PATH" ] || { echo "usage: `basename $0` backup_path [unison_pruning_opts]" >&2; exit 1; }
 FORGET_OPTS=$2
 
@@ -40,6 +40,12 @@ if [ -e $LOCKFILE ] ; then
         log "[$PID] [WARNING] skipped backup of $BACKUP_PATH, lockfile `basename $LOCKFILE` already exists"
         exit 128
     fi
+fi
+
+# Safety check: if we're running a backup on /vol/data make sure that there's something in there.
+if [[ "$BACKUP_PATH" == "$data_mountpoint" && `ls -1 $data_mountpoint | wc -l | bc` == "0" ]]; then
+    notify "[$PID] [ERROR] refusing to backup $BACKUP_PATH: directory is empty"
+    exit 130
 fi
 
 touch $LOCKFILE
