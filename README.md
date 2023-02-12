@@ -12,6 +12,8 @@ Safe • Secure • Flexible</p>
 
 <p align="center"><img src="docs/images/overview_diagram_simple.png"/></p>
 
+<p align="center"><img src="docs/images/syncdrive.png"/></p>
+
 ## Features
 
 - **Flexibility** - three "types" of drives:
