@@ -3,7 +3,7 @@
 . /etc/pragnastic/pragnastic.conf
 . /etc/pragnastic/pragnastic.subr
 
-_LAST_MSG_FILE=/tmp/pragnastic-status.last.msg
+_LAST_MSG_FILE=/tmp/pragnastic-raidcheck.last.msg
 
 notify_without_dupes() { # params: msg
     msg=$1
