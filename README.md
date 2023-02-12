@@ -8,7 +8,7 @@ Safe • Secure • Flexible</p>
 
 ## Overview
 
- PragNAStic is a network-attached storage solution (NAS) for home or small office use with an emphasis on saftety and security – while keeping it simple. Simple as in: off-the-shelf hardware and straightforward operation.
+PragNAStic is a network-attached storage solution (NAS) for home or small office use with an emphasis on safety and security – while keeping it simple. Simple as in: off-the-shelf hardware and straightforward operation.
 
 <p align="center"><img src="docs/images/overview_diagram_simple.png"/></p>
 
