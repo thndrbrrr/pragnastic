@@ -189,7 +189,7 @@ sysctl hw.disknames
 It's a good idea to setup a user of the `wheel` group with permissions to run `pragnastic`:
 
 ```sh
-cat permit persist alice as root cmd pragnastic >>/etc/doas.conf
+echo "permit persist alice as root cmd pragnastic" >>/etc/doas.conf
 ```
 
 The `pragnastic` command can be used to control every aspect of PragNAStic:
