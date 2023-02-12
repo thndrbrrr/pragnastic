@@ -12,7 +12,9 @@ PragNAStic is a network-attached storage solution (NAS) for home or small office
 
 <p align="center"><img src="docs/images/overview_diagram_simple.png"/></p>
 
-<p align="center"><img src="docs/images/syncdrive.png"/></p>
+Users have access to their own network drive, a shared network drive, and a *SyncDrive*, which, similar to Google Drive, synchronizes files between a local directory and the server for offline availability:
+
+<p align="center"><img src="docs/images/syncdrive_2.png"/></p>
 
 ## Features
 
