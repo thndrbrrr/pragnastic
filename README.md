@@ -8,7 +8,7 @@ Safe • Secure • Flexible</p>
 
 ## Overview
 
- PragNAStic is a network-attached storage solution (NAS) for home or small office use with an emphasis on saftety and security – while keeping it simple. Simple as in: off-the-shelf hardware and straightforward operation.
+PragNAStic is a network-attached storage solution (NAS) for home or small office use with an emphasis on safety and security – while keeping it simple. Simple as in: off-the-shelf hardware and straightforward operation.
 
 <p align="center"><img src="docs/images/overview_diagram_simple.png"/></p>
 
@@ -188,13 +188,22 @@ sysctl hw.disknames
 
 ## Usage
 
-It's a good idea to setup a user of the `wheel` group with permissions to run `pragnastic`:
+It's a good idea to provide a non-root user with permissions to run `pragnastic` using `doas`:
 
 ```sh
 echo "permit persist alice as root cmd pragnastic" >>/etc/doas.conf
 ```
 
-The `pragnastic` command can be used to control every aspect of PragNAStic:
+The `pragnastic` command can be used to:
+
+- backup a directory and optionally prune repo
+- display various information such as:
+  - backup and status check log
+  - remaining free space on disks 
+  - list of snapshots in a backup repo
+  - contents of a snapshot
+- check status of data softraid
+- mount and unmount drives
 
 ```sh
 $ pragnastic
