@@ -18,7 +18,7 @@ stty -echo 2>/dev/null
 read -s data_pw
 stty echo 2>/dev/null
 echo
-echo -n "send notifications to (leave empty to disable): "
+echo -n "notification recipient's email (leave empty to disable): "
 read notification_recipient
 echo 
 echo "Installing PragNAStic with this config:"
@@ -28,7 +28,7 @@ echo "  backup repo password: ****"
 echo "  data0 disk id: $data0_disk_id"
 echo "  data1 disk id: $data1_disk_id"
 echo "  data RAID password: ****"
-echo "  notifications recipient: $notification_recipient"
+echo "  notification recipient: $notification_recipient"
 echo -n "Proceed? [y/N] "
 read proceed
 echo
