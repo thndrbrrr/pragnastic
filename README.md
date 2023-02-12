@@ -86,7 +86,7 @@ pkg_add unison--no_x11
 
 **Data disks**
 
-The instructions below create one single RAID-type partition on each data disk. So for each data disk (`sdX` being the disk's device):
+The instructions below create one single RAID partition on each data disk. So for each data disk (`sdX` being the disk's device):
 
 ```sh
 # erase traces of any previous softraid
