@@ -266,7 +266,55 @@ $ doas pragnastic unmount all
 ```
 ... 2BContinued ...
 
+## Setting up clients
+
+Scripts are provided to mount and unmount NetDrive and SharedDrive as well as synchronize the SyncDrive. All scripts rely on the config file `~/.pragnastic.conf` in your home directory. Here's the sample you can find in `client/conf/pragnastic.conf`:
+
+```
+netdrive_remote=alice@example.com:/vol/data/alice/netdrive
+netdrive_local=~/NetDrive
+shareddrive_remote=alice@example.com:/vol/data/shared
+shareddrive_local=~/SharedDrive
+
+syncdrive_lockfile=~/.pragnastic.syncdrive.lock
+unison_executable=/usr/local/bin/unison
+unison_profile=alice
+lockfile_age_notification_threshold=120  # 2 mins (notifications currently only work on macOS)
+```
+
+You might notice that the location of the user's SyncDrive is not configured in there: that is because SyncDrive uses [Unison](https://github.com/bcpierce00/unison) to synchronize remote and local directories, and Unison reads that kind of information out of a Unison profile. The config file above will have Unison use profile `alice`, which means it expects to find the file `~/.unison/alice.prf`.
+
+Look at some sample profiles in `client/conf/unison` as well as [Unison's excellent documentation](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html) to create your Unison profile, and don't forget to update the `unison_profile` variable in `~/.pragnastic.conf` accordingly.
+
+
 ### macOS
+
+The commands below will create the directories, and copy the `common` configuration for Unison:
+
+```sh
+$ cd ~
+$ mkdir {SyncDrive,SharedDrive,NetDrive}
+$ mkdir .unison
+$ cp location/of/pragnastic/client/conf/unison/common .unison
+# ... and don't forget to add your Unison profile to ~/.unison
+```
+
+**SyncDrive**
+
+On macOS, SyncDrive is run via `cron`. There is a sample `crontab` in `client/macos/crontab`:
+
+```text
+PRAGNASTIC_CLIENT_DIR=/some/path/to/pragnastic/client/macos
+* * * * * $PRAGNASTIC_CLIENT_DIR/pragnastic-syncdrive.sh >>$HOME/.pragnastic.syncdrive.log 2>&1
+```
+
+Adjust the `PRAGNASTIC_CLIENT_DIR` variable as needed and use `crontab -e` to install it.
+
+Setting it up like this will have SyncDrive keep a log file in `~/.pragnastic.syncdrive.log`.
+
+SyncDrive will skip synchronization if the lock file already exists (which is defined in via the variable `syncdrive_lockfile` in `~/.pragnastic.conf`). That's intentional, since sometimes synchronization runs can last longer than a minute. After a configurable amount of time (`lockfile_age_notification_threshold` in `~/.pragnastic.conf`), per default 2 minutes, it will pop up a notification on the desktop though so you know that something is slightly out of the ordinary.
+
+**NetDrive and SharedDrive**
 
 2BDocumented
 
