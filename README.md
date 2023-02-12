@@ -106,13 +106,14 @@ disklabel -wAT disklabel_raid_template sdX
 
 The two data disks now need to be setup to become a single, encrypted RAID 1 volume. RAID 1 means that all data is mirrored between both disks, therefore if one should fail you'll be able to continue using PragNAStic without service interruption.
 
-Use a good password. Otherwise, why even bother with all this? Something long like `x21VJiDZMcDUtq5TGPyBQsCdwYGrc89uxGp0X2HY7tqxbVIUfMxP67nE8OhiaZsT` is a great password, something like `abc123` is not.
+Use a good password to encrypt your data RAID. Something long like `x21VJiDZMcDUtq5TGPyBQsCdwYGrc89uxGp0X2HY` is a great password, something like `abc123` is not.
 
 In the steps below `sdX` stands for the first data disk, `sdY` for the second data disk, and `sdZ` for the new device that is your RAID (which you'll know after running the `bioctl` command below):
 
 ```sh
 # create softraid device (bioctl will ask for your password)
 bioctl -c 1C -l /dev/sdXa,/dev/sdYa softraid0
+# > softraid0: RAID 1C volume attached as sdZ
 
 # clear RAID's first sector
 dd if=/dev/zero of=/dev/rsdZc bs=1m count=1
@@ -186,6 +187,30 @@ sysctl hw.disknames
 # > done
 ```
 
+**Cron jobs**
+
+Three cron jobs are needed to run PragNAStic:
+
+- data backup job, running every 10 minutes
+- server backup job, running once nightly
+- RAID status check, running every minute
+
+Sample entries can be found in `server/conf/crontab`, and if you've installed PragNAStic in the default location and are using the default location `/vol` for mounting drives then you can just copy-paste that into `root`'s `crontab`, or append it like so:
+
+```sh
+# pipe current crontab into a temporary file
+$ doas crontab -l >tmp_crontab
+
+# append PragNAStic cron jobs
+$ cat server/conf/crontab >>tmp_crontab
+
+# install updated crontab
+$ doas cronab tmp_crontab
+```
+
+**Note:** It is recommended to install the cron jobs only once you've verified that things are working as expected. Therefore read on through the usage section below, mount the drives, perform a backup as well as a RAID check using the `pragnastic` command, and *then* install the cron jobs.
+
+
 ## Usage
 
 It's a good idea to provide a non-root user with permissions to run `pragnastic` using `doas`:
@@ -196,14 +221,14 @@ echo "permit persist alice as root cmd pragnastic" >>/etc/doas.conf
 
 The `pragnastic` command can be used to:
 
-- backup a directory and optionally prune repo
+- backup a directory and optionally prune backup repo
+- check status of data softraid
+- mount and unmount drives
 - display various information such as:
-  - backup and status check log
+  - PragNAStic log
   - remaining free space on disks 
   - list of snapshots in a backup repo
   - contents of a snapshot
-- check status of data softraid
-- mount and unmount drives
 
 ```sh
 $ pragnastic
