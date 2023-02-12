@@ -29,4 +29,5 @@ softraid_status=`sysctl hw.sensors.softraid0 | grep $softraid_device`
 softraid_short_status=`echo $softraid_status | cut -b29-`
 [ "$softraid_short_status" != "online ($softraid_device), OK" ] && { notify_without_dupes "[WARNING] data softraid status: $softraid_short_status\n`bioctl $softraid_device`" >&2; exit 3; }
 
+rm $_LAST_MSG_FILE
 log "data softraid status: $softraid_short_status"
