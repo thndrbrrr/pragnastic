@@ -8,6 +8,8 @@ Safe • Secure • Flexible</p>
 
 ## Overview
 
+ PragNAStic is a network-attached storage solution (NAS) for home or small office use with an emphasis on saftety and security – while keeping it simple. Simple as in: off-the-shelf hardware and straightforward operation.
+
 <p align="center"><img src="docs/images/overview_diagram_simple.png"/></p>
 
 ## Features
@@ -33,7 +35,6 @@ Safe • Secure • Flexible</p>
 - **Pragmatic**
   - no frills, bells, or whistles, but gets the job done
   
-
 ### Backups
 
 - scope
@@ -59,11 +60,29 @@ Safe • Secure • Flexible</p>
 
 ## Installation
 
-TBDocumented
+While operation is supposed to be straightforward, the installation still involves a few non-trivial steps. Knowledge of Unix-like operating systems and network configuration is required.
+
+<!-- 2BContinued -->
+
+### Server configuration
+
+A few general notes:
+
+- Give the server that runs PragNAStic a fixed IP address. It avoids headaches.
+- A server connected to your router or gateway via an ethernet cable will be faster and won't compete for wifi bandwidth.
+- If you want to receive email notifications then you will need to configure your server's primary mail system accordingly. On OpenBSD that's by default `smtpd`, but any alternative system that allows PragNAStic to send email via the `mail` command is fine.
+
+From here on the instructions assume that you are the `root` user on an OpenBSD system.
+
+```sh
+# Install required packages
+pkg_add restic
+pkg_add unison--no_x11
+```
 
 ### Prepare disks
 
-This assumes you're doing this with OpenBSD.
+<!-- All disks will need to be formatted, some will be encrypted -->
 
 **Backup disks**
 
@@ -112,7 +131,7 @@ newfs /dev/rsdZa
 
 ### Server
 
-TBDocumented
+2BDocumented
 
 ```sh
 install.sh
@@ -120,11 +139,11 @@ install.sh
 
 ### macOS
 
-TBDocumented
+2BDocumented
 
 ### Windows
 
-TBDocumented
+2BDocumented
 
 ## Contributing
 
