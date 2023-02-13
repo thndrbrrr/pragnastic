@@ -315,7 +315,7 @@ Adjust the `PRAGNASTIC_CLIENT_DIR` variable as needed and use `crontab -e` to in
 
 Setting it up like this will have SyncDrive keep a log file in `~/.pragnastic.syncdrive.log`.
 
-SyncDrive will skip synchronization if the lock file already exists (which is defined in via the variable `syncdrive_lockfile` in `~/.pragnastic.conf`). That's intentional, since sometimes synchronization runs can last longer than a minute. After a configurable amount of time (`lockfile_age_notification_threshold` in `~/.pragnastic.conf`), per default 2 minutes, it will pop up a notification on the desktop though so you know that something is slightly out of the ordinary.
+SyncDrive will skip synchronization if the lock file already exists. Sometimes synchronization runs can last longer than a minute, therefore this will happen from occasionally. After a configurable amount of time (`lockfile_age_notification_threshold` in `~/.pragnastic.conf`), per default 2 minutes, SyncDrive will show a notification on the desktop though, just so you know that something is slightly out of the ordinary.
 
 **NetDrive and SharedDrive**
 
