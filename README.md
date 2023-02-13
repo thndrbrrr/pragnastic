@@ -213,6 +213,7 @@ $ doas cronab tmp_crontab
 
 **Note:** It is recommended to install the cron jobs only once you've verified that things are working as expected. Therefore read on through the usage section below, mount the drives, perform a backup as well as a RAID check using the `pragnastic` command, and *then* install the cron jobs.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Usage
 
@@ -269,9 +270,22 @@ $ doas pragnastic unmount all
 ```
 ... 2BContinued ...
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Setting up clients
 
-Scripts are provided to mount and unmount NetDrive and SharedDrive as well as synchronize the SyncDrive. All scripts rely on the config file `~/.pragnastic.conf` in your home directory. Here's the sample you can find in `client/conf/pragnastic.conf`:
+PragNAStic provides scripts for macOS and Windows to:
+
+- mount and unmount NetDrive and SharedDrive
+- synchronize SyncDrive
+
+macOS and Windows only (for now) ... all you others on different operating systems will probably know what to do. :-P
+
+The scripts make use of Unison and SSHFS. The [installation instructions for Unison](https://github.com/bcpierce00/unison/wiki/Downloading-Unison) will tell you what you need to do, depending on whether you are on macOS or Windows. Instructions for installing SSHFS for your operating system are given below in the respective OS section.
+
+### macOS
+
+All macOS scripts read what they need to know from a config file `~/.pragnastic.conf` in your home directory. Here's the sample from `client/macos/pragnastic.conf`:
 
 ```
 netdrive_remote=alice@example.com:/vol/data/alice/netdrive
@@ -285,14 +299,13 @@ unison_profile=alice
 lockfile_age_notification_threshold=120  # 2 mins (notifications currently only work on macOS)
 ```
 
-You might notice that the location of the user's SyncDrive is not configured in there: that is because SyncDrive uses [Unison](https://github.com/bcpierce00/unison) to synchronize remote and local directories, and Unison reads that kind of information out of a Unison profile. The config file above will have Unison use profile `alice`, which means it expects to find the file `~/.unison/alice.prf`.
+You might notice that the location of a user's SyncDrive is not configured in there: that is because SyncDrive uses [Unison](https://github.com/bcpierce00/unison) to synchronize remote and local directories, and Unison reads that kind of information from a Unison profile. The config file above will have Unison use profile `alice`, which means it expects to find the file `~/.unison/alice.prf`.
 
-Look at some sample profiles in `client/conf/unison` as well as [Unison's excellent documentation](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html) to create your Unison profile, and don't forget to update the `unison_profile` variable in `~/.pragnastic.conf` accordingly.
+Look at some sample profiles in `client/conf/unison` as well as [Unison's excellent documentation](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html) to create your Unison profile, then copy the file to `~/.unison` and don't forget to update the `unison_profile` variable in `~/.pragnastic.conf` accordingly.
 
+**Create local directories and Unison configuration**
 
-### macOS
-
-The commands below will create the directories, and copy the `common` configuration for Unison:
+The commands below will create directories for SyncDrive, NetDrive, and SharedDrive as well as copy the `common` configuration for Unison:
 
 ```sh
 $ cd ~
@@ -304,6 +317,8 @@ $ cp location/of/pragnastic/client/conf/unison/common .unison
 
 **SyncDrive**
 
+First, download macFUSE and SSHFS from the [macFUSE homepage](https://osxfuse.github.io/) and install both.
+
 On macOS, SyncDrive is run via `cron`. There is a sample `crontab` in `client/macos/crontab`:
 
 ```text
@@ -311,19 +326,60 @@ PRAGNASTIC_CLIENT_DIR=/some/path/to/pragnastic/client/macos
 * * * * * $PRAGNASTIC_CLIENT_DIR/pragnastic-syncdrive.sh >>$HOME/.pragnastic.syncdrive.log 2>&1
 ```
 
-Adjust the `PRAGNASTIC_CLIENT_DIR` variable as needed and use `crontab -e` to install it.
+Adjust `PRAGNASTIC_CLIENT_DIR` variable as needed and use `crontab -e` to install it.
 
 Setting it up like this will have SyncDrive keep a log file in `~/.pragnastic.syncdrive.log`.
 
-SyncDrive will skip synchronization if the lock file already exists. Sometimes synchronization runs can last longer than a minute, therefore this will happen from occasionally. After a configurable amount of time (`lockfile_age_notification_threshold` in `~/.pragnastic.conf`), per default 2 minutes, SyncDrive will show a notification on the desktop though, just so you know that something is slightly out of the ordinary.
+SyncDrive will skip synchronization if the lock file already exists. Sometimes synchronization runs can last longer than a minute, therefore this will happen occasionally. After a certain amount of time, per default 2 minutes, SyncDrive will display a notification on the desktop though, just so you know that something is slightly out of the ordinary. You can change how long to wait before showing a notification with variable  `lockfile_age_notification_threshold` in `~/.pragnastic.conf`.
 
 **NetDrive and SharedDrive**
 
-2BDocumented
+Since you configured the remote and local locations of those drives in `~/.pragnastic.conf` you can simply run the following to mount NetDrive and SharedDrive:
+
+```sh
+$ client/macos/pragnastic-mount-drives.sh
+```
+
+Unmount both drives:
+
+```sh
+$ client/macos/pragnastic-unmount-drives.sh
+```
+
+Two things to note here:
+
+- You could add `pragnastic/client/macos` to your `PATH` environment variable if you mount and unmount frequently.
+- You could run these scripts at login and logout / shutdown / restart.
 
 ### Windows
 
-2BDocumented
+**SyncDrive**
+
+First install [SSHFS-Win](https://github.com/winfsp/sshfs-win), then create a `SyncDrive` folder in your home folder. Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
+
+Create a task with *Task Scheduler* to run `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+
+... 2BContinued ...
+
+**NetDrive and SharedDrive**
+
+... 2BDocumented ...
+
+Mount drives, per default `N:` for NetDrive and `S:` for SharedDrive:
+
+```sh
+client\windows\pragnastic-mount-drives.bat
+```
+
+Unmount NetDrive and SharedDrive:
+
+```sh
+client\windows\pragnastic-unmount-drives.bat
+```
+
+... 2BContinued ...
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Contributing
 
