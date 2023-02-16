@@ -1,2 +1,5 @@
-net use N: \sshfs.kr\alice@example.com/vol/data/alice/netdrive
-net use S: \sshfs.kr\alice@example.com/vol/shared
+@ECHO OFF
+CALL %LOCALAPPDATA%\PragNAStic\pragnastic-config.bat
+
+net use %NETDRIVE_LOCAL% %NETDRIVE_REMOTE%
+net use %SHAREDDRIVE_LOCAL% %SHARDEDDRIVE_REMOTE%

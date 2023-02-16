@@ -303,7 +303,7 @@ You might notice that the location of a user's SyncDrive is not configured in th
 
 Look at some sample profiles in `client/conf/unison` as well as [Unison's excellent documentation](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html) to create your Unison profile, then copy the file to `~/.unison` and don't forget to update the `unison_profile` variable in `~/.pragnastic.conf` accordingly.
 
-**Create local directories and Unison configuration**
+**Prerequisites: local directories, Unison configuration, and SSHFS**
 
 The commands below will create directories for SyncDrive, NetDrive, and SharedDrive as well as copy the `common` configuration for Unison:
 
@@ -315,9 +315,9 @@ $ cp location/of/pragnastic/client/conf/unison/common .unison
 # ... and don't forget to add your Unison profile to ~/.unison
 ```
 
-**SyncDrive**
+Next, download macFUSE and SSHFS from the [macFUSE homepage](https://osxfuse.github.io/) and install both.
 
-First, download macFUSE and SSHFS from the [macFUSE homepage](https://osxfuse.github.io/) and install both.
+**SyncDrive**
 
 On macOS, SyncDrive is run via `cron`. There is a sample `crontab` in `client/macos/crontab`:
 
@@ -348,24 +348,60 @@ $ client/macos/pragnastic-unmount-drives.sh
 
 Two things to note here:
 
-- You could add `pragnastic/client/macos` to your `PATH` environment variable if you mount and unmount frequently.
-- You could run these scripts at login and logout / shutdown / restart.
+- You could add `pragnastic/client/macos` to your `PATH` environment variable if you mount and unmount drives frequently.
+- You could run these scripts at login and logout / restart / shutdown.
 
 ### Windows
 
+All Windows scripts read what they need to know from config file `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-config.bat`. Here's the sample from `client\windows\pragnastic-conf.bat`:
+
+```
+@ECHO OFF
+
+SET NETDRIVE_LOCAL=N:
+SET NETDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/data/alice/netdrive
+
+SET SHAREDDRIVE_LOCAL=S:
+SET SHARDEDDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/shared
+
+SET UNISON_EXECUTABLE=C:\"Program Files"\Unison\bin\unison.exe
+SET UNISON_PROFILE=alice
+```
+
+The commands below, assuming you are in PragNAStic's repository root directory, will create the config directory, place the `pragnastic-conf.bat` configuration file in there, and then open Notepad to edit the file:
+
+```
+C:\...> mkdir %HOMEPATH%\AppData\Local\PragNAStic
+C:\...> copy client\windows\pragnastic-conf.bat %HOMEPATH%\AppData\Local\PragNAStic
+C:\...> notepad %HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat
+```
+
+Change the user names and paths to match your user name on the PragNAStic server, the name of the `UNISON_PROFILE` variable, and possibly also where Unison is installed in case you didn't install it in `C:\Program Files\Unison`.
+
+**Prerequisites: local directories, Unison configuration, and SSHFS**
+
+Create a `SyncDrive` and a `.unison` directory in your home folder:
+
+```
+C:\...> mkdir %HOMEPATH%\SyncDrive
+C:\...> mkdir %HOMEPATH%\.unison
+```
+
+Before continuing install [SSHFS-Win](https://github.com/winfsp/sshfs-win).
+
 **SyncDrive**
 
-First install [SSHFS-Win](https://github.com/winfsp/sshfs-win), then create a `SyncDrive` folder in your home folder. Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
 
-Create a task with *Task Scheduler* to run `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+
+Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
+
+Open *Task Scheduler* and create a task that runs `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
 
 ... 2BContinued ...
 
 **NetDrive and SharedDrive**
 
-... 2BDocumented ...
-
-Mount drives, per default `N:` for NetDrive and `S:` for SharedDrive:
+Mount drives NetDrive and SharedDrive, which should show up as volumes `N:` and `S:` in File Explorer, respectively:
 
 ```sh
 client\windows\pragnastic-mount-drives.bat
@@ -376,8 +412,6 @@ Unmount NetDrive and SharedDrive:
 ```sh
 client\windows\pragnastic-unmount-drives.bat
 ```
-
-... 2BContinued ...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
