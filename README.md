@@ -303,7 +303,7 @@ You might notice that the location of a user's SyncDrive is not configured in th
 
 Look at some sample profiles in `client/conf/unison` as well as [Unison's excellent documentation](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html) to create your Unison profile, then copy the file to `~/.unison` and don't forget to update the `unison_profile` variable in `~/.pragnastic.conf` accordingly.
 
-**Prerequisites: local directories, Unison configuration, and SSHFS**
+**Prerequisites: local directories, Unison configuration, SSHFS**
 
 The commands below will create directories for SyncDrive, NetDrive, and SharedDrive as well as copy the `common` configuration for Unison:
 
@@ -378,7 +378,7 @@ C:\...> notepad %HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat
 
 Change the user names and paths to match your user name on the PragNAStic server, the name of the `UNISON_PROFILE` variable, and possibly also where Unison is installed in case you didn't install it in `C:\Program Files\Unison`.
 
-**Prerequisites: local directories, Unison configuration, and SSHFS**
+**Prerequisites: local directories, Unison configuration, SSHFS**
 
 Create a `SyncDrive` and a `.unison` directory in your home folder:
 
@@ -391,17 +391,15 @@ Before continuing install [SSHFS-Win](https://github.com/winfsp/sshfs-win).
 
 **SyncDrive**
 
-
-
 Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
 
-Open *Task Scheduler* and create a task that runs `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+Launch Task Scheduler and create a task that runs `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
 
 ... 2BContinued ...
 
 **NetDrive and SharedDrive**
 
-Mount drives NetDrive and SharedDrive, which should show up as volumes `N:` and `S:` in File Explorer, respectively:
+Mount NetDrive and SharedDrive, which should show up as volumes `N:` and `S:` in File Explorer, respectively:
 
 ```sh
 client\windows\pragnastic-mount-drives.bat
@@ -412,6 +410,10 @@ Unmount NetDrive and SharedDrive:
 ```sh
 client\windows\pragnastic-unmount-drives.bat
 ```
+
+> 👉 You can change the drive letters used by NetDrive and SharedDrive in your PragNAStic configuration file (`%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`).
+
+Windows with SSHFS-Win is pretty good at restoring server connections to remote drives after a reboot. However, if you are running into issues then you could use Task Scheduler to create a task that calls the above scripts to mount the drives when logging in and unmount them when logging out, rebooting, or shutting down.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
