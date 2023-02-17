@@ -353,7 +353,22 @@ Two things to note here:
 
 ### Windows
 
-All Windows scripts read what they need to know from config file `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-config.bat`. Here's the sample from `client\windows\pragnastic-conf.bat`:
+Open Command Prompt as administrator and checkout PragNAStic's GitHub repository into your `C:\Program Files` directory:
+
+```
+C:\...> cd "\Program Files"
+C:\...> git clone https://github.com/thndrbrrr/pragnastic.git
+```
+
+Now open Command Prompt as a regular user to create PragNAStic's configuration directory, place the `pragnastic-conf.bat` configuration file in there, and then open Notepad to edit the file:
+
+```
+C:\...> mkdir %HOMEPATH%\AppData\Local\PragNAStic
+C:\...> copy "\Program Files\PragNAStic\client\windows\pragnastic-conf.bat" %HOMEPATH%\AppData\Local\PragNAStic
+C:\...> notepad %HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat
+```
+
+All Windows scripts read what they need to know from this very config file `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-config.bat`, which, when copied from the repository, looks like this:
 
 ```
 @ECHO OFF
@@ -368,17 +383,11 @@ SET UNISON_EXECUTABLE=C:\"Program Files"\Unison\bin\unison.exe
 SET UNISON_PROFILE=alice
 ```
 
-The commands below, assuming you are in PragNAStic's repository root directory, will create the config directory, place the `pragnastic-conf.bat` configuration file in there, and then open Notepad to edit the file:
-
-```
-C:\...> mkdir %HOMEPATH%\AppData\Local\PragNAStic
-C:\...> copy client\windows\pragnastic-conf.bat %HOMEPATH%\AppData\Local\PragNAStic
-C:\...> notepad %HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat
-```
-
-Change the user names and paths to match your user name on the PragNAStic server, the name of the `UNISON_PROFILE` variable, and possibly also where Unison is installed in case you didn't install it in `C:\Program Files\Unison`.
+Change the user names and paths to match your user name on the PragNAStic server.
 
 **Prerequisites: local directories, Unison configuration, SSHFS**
+
+Download the latest SSHFS release from the [SSHFS-Win](https://github.com/winfsp/sshfs-win) homepage and install it.
 
 Create a `SyncDrive` and a `.unison` directory in your home folder:
 
@@ -387,11 +396,11 @@ C:\...> mkdir %HOMEPATH%\SyncDrive
 C:\...> mkdir %HOMEPATH%\.unison
 ```
 
-Before continuing install [SSHFS-Win](https://github.com/winfsp/sshfs-win).
-
 **SyncDrive**
 
 Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
+
+Update the Unison profile name in variable `UNISON_PROFILE` in `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-config.bat`, and possibly also where the Unison executable is located in case you didn't install it in `C:\Program Files\Unison`.
 
 Launch Task Scheduler and create a task that runs `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
 
