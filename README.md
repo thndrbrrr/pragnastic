@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <div align="center">
- <img width="200px" src="docs/images/pragnastic_tmp_logo_3.png"/>
+ <img width="200px" src="docs/images/pragnastic_tmp_logo_4.png"/>
 <h3>PragNAStic</h3>
 <p><b>Network-attached storage with integrated backup</b><br/>
 Safe • Secure • Flexible</p>
