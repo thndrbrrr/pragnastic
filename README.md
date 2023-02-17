@@ -377,7 +377,7 @@ SET NETDRIVE_LOCAL=N:
 SET NETDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/data/alice/netdrive
 
 SET SHAREDDRIVE_LOCAL=S:
-SET SHARDEDDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/shared
+SET SHAREDDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/data/shared
 
 SET UNISON_EXECUTABLE=C:\"Program Files"\Unison\bin\unison.exe
 SET UNISON_PROFILE=alice
@@ -398,11 +398,13 @@ C:\...> mkdir %HOMEPATH%\.unison
 
 **SyncDrive**
 
-Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
+Create a Unison profile (`client\conf\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
 
 Update the Unison profile name in variable `UNISON_PROFILE` in `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`, and possibly also where the Unison executable is located in case you didn't install it in `C:\Program Files\Unison`.
 
 Launch Task Scheduler and create a task that runs `C:\Program Files\PragNAStic\client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+
+> 👉 If you have never logged into your PragNAStic server through SSH then you might have to start SyncDrive once from the Command Prompt, during which SSH will ask you to confirm that you actually want to connect to your PragNAStic server. (You'll only have to do this once.)
 
 ... 2BContinued ...
 
@@ -410,14 +412,14 @@ Launch Task Scheduler and create a task that runs `C:\Program Files\PragNAStic\c
 
 Mount NetDrive and SharedDrive, which should show up as volumes `N:` and `S:` in File Explorer, respectively:
 
-```sh
-client\windows\pragnastic-mount-drives.bat
+```
+C:\...> "C:\Program Files\PragNAStic\client\windows\pragnastic-mount-drives.sh"
 ```
 
 Unmount NetDrive and SharedDrive:
 
-```sh
-client\windows\pragnastic-unmount-drives.bat
+```
+C:\...> "C:\Program Files\PragNAStic\client\windows\pragnastic-unmount-drives.sh"
 ```
 
 > 👉 You can change the drive letters used by NetDrive and SharedDrive in your PragNAStic configuration file (`%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`).
