@@ -303,7 +303,7 @@ You might notice that the location of a user's SyncDrive is not configured in th
 
 Look at some sample profiles in `client/conf/unison` as well as [Unison's excellent documentation](https://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html) to create your Unison profile, then copy the file to `~/.unison` and don't forget to update the `unison_profile` variable in `~/.pragnastic.conf` accordingly.
 
-**Create local directories and Unison configuration**
+**Prerequisites: local directories, Unison configuration, SSHFS**
 
 The commands below will create directories for SyncDrive, NetDrive, and SharedDrive as well as copy the `common` configuration for Unison:
 
@@ -315,9 +315,9 @@ $ cp location/of/pragnastic/client/conf/unison/common .unison
 # ... and don't forget to add your Unison profile to ~/.unison
 ```
 
-**SyncDrive**
+Next, download macFUSE and SSHFS from the [macFUSE homepage](https://osxfuse.github.io/) and install both.
 
-First, download macFUSE and SSHFS from the [macFUSE homepage](https://osxfuse.github.io/) and install both.
+**SyncDrive**
 
 On macOS, SyncDrive is run via `cron`. There is a sample `crontab` in `client/macos/crontab`:
 
@@ -348,36 +348,83 @@ $ client/macos/pragnastic-unmount-drives.sh
 
 Two things to note here:
 
-- You could add `pragnastic/client/macos` to your `PATH` environment variable if you mount and unmount frequently.
-- You could run these scripts at login and logout / shutdown / restart.
+- You could add `pragnastic/client/macos` to your `PATH` environment variable if you mount and unmount drives frequently.
+- You could run these scripts at login and logout / restart / shutdown.
 
 ### Windows
 
+Open Command Prompt as administrator and checkout PragNAStic's GitHub repository into your `C:\Program Files` directory:
+
+```
+C:\...> cd "\Program Files"
+C:\...> git clone https://github.com/thndrbrrr/pragnastic.git
+```
+
+Now open Command Prompt as a regular user to create PragNAStic's configuration directory, place the `pragnastic-conf.bat` configuration file in there, and then open Notepad to edit the file:
+
+```
+C:\...> mkdir %HOMEPATH%\AppData\Local\PragNAStic
+C:\...> copy "\Program Files\PragNAStic\client\windows\pragnastic-conf.bat" %HOMEPATH%\AppData\Local\PragNAStic
+C:\...> notepad %HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat
+```
+
+All Windows scripts read what they need to know from this very config file `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`, which, when copied from the repository, looks like this:
+
+```
+@ECHO OFF
+
+SET NETDRIVE_LOCAL=N:
+SET NETDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/data/alice/netdrive
+
+SET SHAREDDRIVE_LOCAL=S:
+SET SHAREDDRIVE_REMOTE=\sshfs.kr\alice@example.com/vol/data/shared
+
+SET UNISON_EXECUTABLE=C:\"Program Files"\Unison\bin\unison.exe
+SET UNISON_PROFILE=alice
+```
+
+Change the user names and paths to match your user name on the PragNAStic server.
+
+**Prerequisites: local directories, Unison configuration, SSHFS**
+
+Download the latest SSHFS release from the [SSHFS-Win](https://github.com/winfsp/sshfs-win) homepage and install it.
+
+Create a `SyncDrive` and a `.unison` directory in your home folder:
+
+```
+C:\...> mkdir %HOMEPATH%\SyncDrive
+C:\...> mkdir %HOMEPATH%\.unison
+```
+
 **SyncDrive**
 
-First install [SSHFS-Win](https://github.com/winfsp/sshfs-win), then create a `SyncDrive` folder in your home folder. Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
+Create a Unison profile (`client\conf\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
 
-Create a task with *Task Scheduler* to run `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+Update the Unison profile name in variable `UNISON_PROFILE` in `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`, and possibly also where the Unison executable is located in case you didn't install it in `C:\Program Files\Unison`.
+
+Launch Task Scheduler and create a task that runs `C:\Program Files\PragNAStic\client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+
+> 👉 If you have never logged into your PragNAStic server through SSH then you might have to start SyncDrive once from the Command Prompt, during which SSH will ask you to confirm that you actually want to connect to your PragNAStic server. (You'll only have to do this once.)
 
 ... 2BContinued ...
 
 **NetDrive and SharedDrive**
 
-... 2BDocumented ...
+Mount NetDrive and SharedDrive, which should show up as volumes `N:` and `S:` in File Explorer, respectively:
 
-Mount drives, per default `N:` for NetDrive and `S:` for SharedDrive:
-
-```sh
-client\windows\pragnastic-mount-drives.bat
+```
+C:\...> "C:\Program Files\PragNAStic\client\windows\pragnastic-mount-drives.sh"
 ```
 
 Unmount NetDrive and SharedDrive:
 
-```sh
-client\windows\pragnastic-unmount-drives.bat
+```
+C:\...> "C:\Program Files\PragNAStic\client\windows\pragnastic-unmount-drives.sh"
 ```
 
-... 2BContinued ...
+> 👉 You can change the drive letters used by NetDrive and SharedDrive in your PragNAStic configuration file (`%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`).
+
+Windows with SSHFS-Win is pretty good at restoring server connections to remote drives after a reboot. However, if you are running into issues then you could use Task Scheduler to create a task that calls the above scripts to mount the drives when logging in and unmount them when logging out, rebooting, or shutting down.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

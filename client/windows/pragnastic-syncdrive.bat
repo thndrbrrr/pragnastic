@@ -1,7 +1,6 @@
 @ECHO OFF
-SET UNISON_EXECUTABLE=%~1
-SET UNISON_PROFILE=%2
-SET LOCKFILE=%HOMEPATH%\AppData\Local\Temp\.pragnastic.syncdrive.lock
+CALL %LOCALAPPDATA%\PragNAStic\pragnastic-conf.bat
+SET LOCKFILE=%LOCALAPPDATA%\Temp\.pragnastic.syncdrive.lock
 
 IF NOT EXIST "%LOCKFILE%" (
     @copy nul %LOCKFILE% >nul
