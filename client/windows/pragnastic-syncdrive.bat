@@ -1,5 +1,5 @@
 @ECHO OFF
-CALL %LOCALAPPDATA%\PragNAStic\pragnastic-config.bat
+CALL %LOCALAPPDATA%\PragNAStic\pragnastic-conf.bat
 SET LOCKFILE=%LOCALAPPDATA%\Temp\.pragnastic.syncdrive.lock
 
 IF NOT EXIST "%LOCKFILE%" (

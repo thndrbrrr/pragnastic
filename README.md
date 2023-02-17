@@ -368,7 +368,7 @@ C:\...> copy "\Program Files\PragNAStic\client\windows\pragnastic-conf.bat" %HOM
 C:\...> notepad %HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat
 ```
 
-All Windows scripts read what they need to know from this very config file `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-config.bat`, which, when copied from the repository, looks like this:
+All Windows scripts read what they need to know from this very config file `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`, which, when copied from the repository, looks like this:
 
 ```
 @ECHO OFF
@@ -400,9 +400,9 @@ C:\...> mkdir %HOMEPATH%\.unison
 
 Create a Unison profile (`client\con\unison\alice.prf` is an example for Windows) and put it, along with `client\conf\unison\common`, into your `%HOMEPATH%\.unison` folder.
 
-Update the Unison profile name in variable `UNISON_PROFILE` in `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-config.bat`, and possibly also where the Unison executable is located in case you didn't install it in `C:\Program Files\Unison`.
+Update the Unison profile name in variable `UNISON_PROFILE` in `%HOMEPATH%\AppData\Local\PragNAStic\pragnastic-conf.bat`, and possibly also where the Unison executable is located in case you didn't install it in `C:\Program Files\Unison`.
 
-Launch Task Scheduler and create a task that runs `client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
+Launch Task Scheduler and create a task that runs `C:\Program Files\PragNAStic\client\windows\pragnastic-syncdrive.bat` once every minute. (Note: screenshots to follow)
 
 ... 2BContinued ...
 
