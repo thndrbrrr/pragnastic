@@ -5,7 +5,7 @@
 
 PID=$$
 BACKUP_PATH=`echo "${1%/}"`  # strip any trailing path separator
-[ -n "$BACKUP_PATH" ] || { echo "usage: `basename $0` backup_path [unison_pruning_opts]" >&2; exit 1; }
+[ -n "$BACKUP_PATH" ] || { echo "usage: `basename $0` backup_path [restic_pruning_opts]" >&2; exit 1; }
 FORGET_OPTS=$2
 
 LOCKFILE=/tmp/pragnastic-backup-`echo $BACKUP_PATH | md5`.lock
