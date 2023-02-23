@@ -66,6 +66,6 @@ sed -i "" s/alice@example.com/$notification_recipient/ /etc/pragnastic/pragnasti
 # sed -i "" s/your_data1_disk_id/$data1_disk_id/ /etc/pragnastic/pragnastic.conf
 
 echo $backup_pw >/etc/pragnastic/backup_repo.pw
-echo $data_pw"\n" >/etc/pragnastic/data_pool.pw
+echo $data_pw >/etc/pragnastic/data_pool.pw
 
 echo "done"
