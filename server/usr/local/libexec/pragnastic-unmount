@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/usr/bin/env oksh
 
 . /etc/pragnastic/pragnastic.conf
 . /etc/pragnastic/pragnastic.subr
@@ -8,16 +8,14 @@ if [[ "$1" != "all" && "$1" != "backup" && "$1" != "data" ]]; then
     exit 1
 fi
 
-# Unmount and detach data softraid
+# Unmount data
 if [[ "$1" == "data" || "$1" == "all" ]]; then
-    data_raid_dev=`mount | grep "on $data_mountpoint type ffs" | cut -b6-8`
-    [ -n "$data_raid_dev" ] || { echo "$data_mountpoint not mounted, aborting"; exit 2; }
-    umount $data_mountpoint && echo "$data_mountpoint unmounted OK" || { echo "failed to unmount $data_mountpoint, aborting"; exit 3; }
-    bioctl -d $data_raid_dev && echo "softraid $data_raid_dev detached OK" || { echo "failed to detach softraid $data_raid_dev"; exit 4; }
+    zfs umount $data_shared_mountpoint && echo "$data_shared_mountpoint unmounted OK" || { echo "failed to unmount $data_shared_mountpoint, aborting"; exit 3; }
+    zfs umount $data_mountpoint && echo "$data_mountpoint unmounted OK" || { echo "failed to unmount $data_mountpoint"; exit 3; }
 fi
 
-# Unmount backup disks
+# Unmount backup
 if [[ "$1" == "backup" || "$1" == "all" ]]; then
-    umount $backup0_mountpoint && echo "$backup0_mountpoint unmounted OK"
-    umount $backup1_mountpoint && echo "$backup1_mountpoint unmounted OK"
+    zfs umount $backup0_mountpoint && echo "$backup0_mountpoint unmounted OK"
+    zfs umount $backup1_mountpoint && echo "$backup1_mountpoint unmounted OK"
 fi

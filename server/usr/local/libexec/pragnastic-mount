@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/usr/bin/env oksh
 
 . /etc/pragnastic/pragnastic.conf
 . /etc/pragnastic/pragnastic.subr
@@ -8,41 +8,14 @@ if [[ "$1" != "all" && "$1" != "backup" && "$1" != "data" ]]; then
     exit 1
 fi
 
-# Prints out device name for a given disk id
-disk_id_to_device() { # params: disk_id
-    set -A _disk_info $(sysctl hw.disknames | cut -b14- | sed s/[:,]/\ /g)
-    for i in $(seq 0 $(((${#_disk_info[*]}-1)/2))) ; do
-        if [ ${_disk_info[$i*2+1]} = $1 ] ; then
-            echo ${_disk_info[$i*2]}
-            return 0
-        fi
-    done
-    return 1
-}
-
-# Finds disk devices by their logical name ("data0" etc.) and creates variables with device names (e.g. data0_device=/dev/sd1a, backup1_device=/dev/sd4a)
-discover_disks() { # param: logical_disk_names
-    for disk in $1; do
-        eval _disk_id=\$${disk}_disk_id
-        [ -n "$_disk_id" ] || { echo "$disk: unknown disk, aborting"; exit 1; }
-        _disk_device=`disk_id_to_device $_disk_id`
-        eval ${disk}_device=/dev/${_disk_device}a
-        [ -n "$_disk_device" ] && eval echo "disk ${disk} found at \$${disk}_device" || { echo "$disk: no device found for disk id $_disk_id, aborting"; exit 2; }
-    done
-}
-
-# Mount backup disks
+# Mount backup
 if [[ "$1" == "backup" || "$1" == "all" ]]; then
-    discover_disks "backup0 backup1"
-    mount $backup0_device $backup0_mountpoint && echo "$backup0_device mounted on $backup0_mountpoint OK"
-    mount $backup1_device $backup1_mountpoint && echo "$backup1_device mounted on $backup1_mountpoint OK"
+    zfs mount $backup0_pool $backup0_mountpoint && echo "$backup0_pool mounted on $backup0_mountpoint OK"
+    zfs mount $backup1_pool $backup1_mountpoint && echo "$backup1_pool mounted on $backup1_mountpoint OK"
 fi
 
-# Create and mount data softraid
+# Mount data
 if [[ "$1" == "data" || "$1" == "all" ]]; then
-    discover_disks "data0 data1"
-    _raid_result=`bioctl -c 1C -l $data0_device,$data1_device -p $data_softraid_passwdfile softraid0` || { echo "$_raid_result\nfailed to create softraid, aborting"; exit 3; }
-    data_device=/dev/`echo $_raid_result | cut -b39-`a
-    echo "softraid $data_device created with chunks $data0_device and $data1_device"
-    mount $data_device $data_mountpoint && echo "$data_device mounted on $data_mountpoint OK"
+    zfs mount $data_pool $data_mountpoint && echo "$data_pool mounted on $data_mountpoint OK"
+    zfs mount $data_shared_dataset $data_shared_mountpoint && echo "$data_shared_dataset mounted on $data_shared_mountpoint OK"
 fi

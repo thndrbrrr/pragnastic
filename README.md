@@ -465,8 +465,9 @@ In the end, everyone stands on the shoulders of giants.
 * [macFUSE](https://osxfuse.github.io/)
 * [SSHFS](https://github.com/osxfuse/sshfs)
 * [SSHFS-Win](https://github.com/winfsp/sshfs-win)
-* [OpenBSD](https://www.openbsd.org/)
+* [FreeBSD](https://www.freebsd.org/)
 * [Stack Overflow](https://stackoverflow.com/)
+* [Reddit's /r/homelab](https://www.reddit.com/r/homelab/)
 * Readme based on a template by [Othneil Drew](https://github.com/othneildrew)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

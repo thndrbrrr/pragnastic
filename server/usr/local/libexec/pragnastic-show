@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/usr/bin/env oksh
 
 . /etc/pragnastic/pragnastic.conf
 . /etc/pragnastic/pragnastic.subr
@@ -53,6 +53,7 @@ if [ "$1" == "snapshot" ]; then
 fi
 
 # Show softraid
+# TODO
 if [ "$1" == "softraid" ]; then
     softraid_mount=`mount | grep /vol/data`
     [ $? == 0 ] || echo "[WARNING] data softraid status check failed: unable to determine softraid status, device is not mounted" >&2
@@ -69,6 +70,7 @@ if [ "$1" == "softraid" ]; then
 fi
 
 # Show volumes
+# TODO
 if [ "$1" == "volumes" ]; then
     df -h $volume $backup0_mountpoint $backup1_mountpoint $data_mountpoint
 fi

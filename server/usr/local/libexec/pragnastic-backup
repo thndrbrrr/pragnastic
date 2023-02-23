@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/usr/bin/env oksh
 
 . /etc/pragnastic/pragnastic.conf
 . /etc/pragnastic/pragnastic.subr
@@ -54,9 +54,11 @@ touch $LOCKFILE
 log "[$PID] backing up $BACKUP_PATH"
 if exists $primary_backup_repo; then
     backup $primary_backup_repo && log "[$PID] primary backup of $BACKUP_PATH completed OK"
+    # TODO - error code 1 is fatal,  but error code 3 is "ok" (some source files could not be read), should not trigger a secondary backup
     if error ; then
         log "[$PID] [WARNING] primary backup failed, attempting secondary backup"
         backup $secondary_backup_repo && log "[$PID] secondary backup of $BACKUP_PATH completed OK"
+        # TODO - error code 1 is fatal,  but error code 3 is "ok" (some source files could not be read), should not trigger a secondary backup
         if error ; then
             notify "[$PID] [ERROR] primary and secondary backups failed"
             unlock_and_exit 1
@@ -65,6 +67,7 @@ if exists $primary_backup_repo; then
 elif exists $secondary_backup_repo ; then
     log "[$PID] [WARNING] primary backup unavailable, attempting secondary backup"
     backup $secondary_backup_repo && log "[$PID] secondary backup of $BACKUP_PATH completed OK"
+    # TODO - error code 1 is fatal,  but error code 3 is "ok" (some source files could not be read), should not trigger a secondary backup
     if error ; then
         notify "[$PID] [ERROR] primary backup unavailable and secondary backup failed"
         unlock_and_exit 2
