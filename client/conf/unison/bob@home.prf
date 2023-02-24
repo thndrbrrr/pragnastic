@@ -1,4 +1,4 @@
 include common
 
 root = /Users/bob/SyncDrive
-root = ssh://bob@example.com//vol/data/bob/syncdrive
+root = ssh://bob@example.com//vol/storage/data/bob/syncdrive

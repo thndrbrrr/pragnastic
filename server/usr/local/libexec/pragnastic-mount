@@ -10,12 +10,12 @@ fi
 
 # Mount backup
 if [[ "$1" == "backup" || "$1" == "all" ]]; then
-    zfs mount $backup0_pool $backup0_mountpoint && echo "$backup0_pool mounted on $backup0_mountpoint OK"
-    zfs mount $backup1_pool $backup1_mountpoint && echo "$backup1_pool mounted on $backup1_mountpoint OK"
+    zfs mount $backup0_dataset $backup0_mountpoint && echo "$backup0_dataset mounted on $backup0_mountpoint OK"
+    zfs mount $backup1_dataset $backup1_mountpoint && echo "$backup1_dataset mounted on $backup1_mountpoint OK"
 fi
 
 # Mount data
 if [[ "$1" == "data" || "$1" == "all" ]]; then
-    zfs mount $data_pool $data_mountpoint && echo "$data_pool mounted on $data_mountpoint OK"
+    zfs mount $data_dataset $data_mountpoint && echo "$data_dataset mounted on $data_mountpoint OK"
     zfs mount $data_shared_dataset $data_shared_mountpoint && echo "$data_shared_dataset mounted on $data_shared_mountpoint OK"
 fi

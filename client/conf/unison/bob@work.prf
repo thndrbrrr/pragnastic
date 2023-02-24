@@ -1,7 +1,7 @@
 include common
 
 root = /Users/bob.smith/SyncDrive
-root = ssh://bob@example.com//vol/data/bob/syncdrive
+root = ssh://bob@example.com//vol/storage/data/bob/syncdrive
 
 path      = Path Work
 ignore    = Path Work/Archive
