@@ -40,7 +40,7 @@ fi
 set -e
 
 install -m 0755 -d /etc/pragnastic
-install -m 0600 etc/pragnastic/backup_repo.pw etc/pragnastic/storage_pool.pw /etc/pragnastic
+install -m 0400 etc/pragnastic/backup_repo.pw etc/pragnastic/storage_pool.pw /etc/pragnastic
 install -m 0640 etc/pragnastic/backup.exclude etc/pragnastic/pragnastic.conf /etc/pragnastic
 install -m 0644 etc/pragnastic/pragnastic.subr /etc/pragnastic
 
