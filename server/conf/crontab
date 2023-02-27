@@ -1,6 +1,7 @@
 SHELL=/usr/local/bin/oksh
 
 ################################################################################################
+
 # PraNAStic data backup (24/7 every 10 mins)
 0-50/10 * * * *  /usr/local/sbin/pragnastic backup "/vol/storage/data /vol/storage/data/shared" "--keep-last 6 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y" >>/var/log/pragnastic 2>&1
 
@@ -12,4 +13,5 @@ SHELL=/usr/local/bin/oksh
 
 # PragNAStic ZFS pool status check every minute
 * * * * * /usr/local/sbin/pragnastic check 1>/dev/null 2>>/var/log/pragnastic
+
 ################################################################################################
