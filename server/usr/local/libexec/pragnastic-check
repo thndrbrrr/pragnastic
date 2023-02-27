@@ -21,7 +21,7 @@ notify_without_dupes() { # params: msg
 zpool_status=`zpool status -x`
 if [ "$zpool_status" != "all pools are healthy" ]; then
     zpool_details=`zpool status -v`
-    notify_without_dupes "[WARNING] ZFS pool health\n$zpool_details" >&2; exit 1;
+    notify_without_dupes "[WARNING] ZFS pool health issues\n$zpool_details" >&2; exit 1;
 fi
 
 rm -f $PREV_MSG_HASH_FILE
