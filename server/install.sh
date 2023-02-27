@@ -47,7 +47,7 @@ install -m 0644 etc/pragnastic/pragnastic.subr /etc/pragnastic
 install -m 0754 usr/local/libexec/pragnastic-backup /usr/local/libexec
 install -m 0754 usr/local/libexec/pragnastic-mount /usr/local/libexec/pragnastic-mount
 install -m 0754 usr/local/libexec/pragnastic-show /usr/local/libexec/pragnastic-show
-# install -m 0754 usr/local/libexec/pragnastic-raidcheck /usr/local/libexec/pragnastic-raidcheck
+install -m 0754 usr/local/libexec/pragnastic-check /usr/local/libexec/pragnastic-check
 install -m 0754 usr/local/libexec/pragnastic-unmount /usr/local/libexec/pragnastic-unmount
 
 install -m 0754 usr/local/sbin/pragnastic /usr/local/sbin/pragnastic
