@@ -4,7 +4,7 @@ case $1 in
 	backup)     /usr/local/libexec/pragnastic-backup "$2" "$3" ;;
 	mount)      /usr/local/libexec/pragnastic-mount $2 ;;
 	show)       /usr/local/libexec/pragnastic-show $2 $3 ;;
-    raidcheck)  /usr/local/libexec/pragnastic-raidcheck $2 ;;
+    check)      /usr/local/libexec/pragnastic-check $2 ;;
     unmount)    /usr/local/libexec/pragnastic-unmount $2 ;;
 	*)          echo "usage: `basename $0` backup backup_path [restic_pruning_opts]" >&2                
                 echo "       `basename $0` mount all|backup|data" >&2
