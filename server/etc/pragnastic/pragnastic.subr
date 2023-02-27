@@ -11,7 +11,21 @@ notify() { # params: msg [stream]
     if [[ -n $notification_recipient ]]; then
         _subject=`print -- "$1" | head -n 1`
         log "notifying $notification_recipient, subject: $_subject" >>/var/log/pragnastic
-        # TODO: use msmtp
+        cat <<EOF | msmtp $notification_recipient
+From: PragNAStic at `hostname` <donotreply@`hostname`>
+Subject: $_subject
+
+$1
+EOF
+
+
+cat | msmtp tsgiesselmann@gmail.com
+To: Torben Gee <tsgiesselmann@gmail.com>
+From: PragNAStic at `hostname` <donotreply@`hostname`>
+Subject: SUBJECT
+
+BODY
+T
         print -- "$1" |  mail -s "$_subject" -r "PragNAStic at `hostname` <donotreply@`hostname`>" $notification_recipient
     fi
 }
