@@ -4,12 +4,12 @@
 . /etc/pragnastic/pragnastic.subr
 
 usage() {
-    echo "usage: `basename $0` log|softraid|volumes" >&2
-    echo "usage: `basename $0` snapshot snapshot_id" >&2
+    echo "usage: `basename $0` log|volumes" >&2
+    echo "usage: `basename $0` snapshot snapshot_id [primary|secondary]" >&2
     echo "usage: `basename $0` snapshots [primary|secondary]" >&2
 }
 
-if [[ "$1" != "log" && "$1" != "snapshots" && "$1" != "snapshot" && "$1" != "softraid" && "$1" != "volumes" ]]; then
+if [[ "$1" != "log" && "$1" != "snapshots" && "$1" != "snapshot" && "$1" != "volumes" ]]; then
     usage
     exit 1
 fi
@@ -22,6 +22,7 @@ fi
 
 # List snapshots
 if [ "$1" == "snapshots" ]; then
+    # TODO: fix code duplication
     if [[ "$2" == "primary" || "$2" == "" ]]; then            
         if exists $primary_backup_repo; then
             echo "showing snapshots of primary backup repository at $primary_backup_repo"
@@ -52,25 +53,7 @@ if [ "$1" == "snapshot" ]; then
     fi
 fi
 
-# Show softraid
-# TODO
-if [ "$1" == "softraid" ]; then
-    softraid_mount=`mount | grep /vol/data`
-    [ $? == 0 ] || echo "[WARNING] data softraid status check failed: unable to determine softraid status, device is not mounted" >&2
-    softraid_device=`echo $softraid_mount | cut -b6-8`
-    [ -n "$softraid_device" ] || echo "[WARNING] data softraid status check failed: unable to determine device" >&2
-    softraid_status=`sysctl hw.sensors.softraid0 | grep $softraid_device`
-    [ $? == 0 ] || echo "[WARNING] data softraid status check failed: no sensor data available for device $softraid_device" >&2
-    softraid_short_status=`echo $softraid_status | cut -b29-`
-    if [ "$softraid_short_status" != "online ($softraid_device), OK" ]; then
-        echo "[WARNING] data softraid status: $softraid_short_status\n`bioctl $softraid_device`" >&2
-    else
-        echo "data softraid status: $softraid_short_status"
-    fi
-fi
-
 # Show volumes
-# TODO
 if [ "$1" == "volumes" ]; then
-    df -h $volume $backup0_mountpoint $backup1_mountpoint $data_mountpoint
+    df -h | egrep Filesystem\|^$storage_pool\|^$backup0_pool\|^$backup1_pool && echo && zpool list $storage_pool $backup0_pool $backup1_pool && echo && zpool status $storage_pool $backup0_pool $backup1_pool
 fi

@@ -8,9 +8,9 @@ case $1 in
     unmount)    /usr/local/libexec/pragnastic-unmount $2 ;;
 	*)          echo "usage: `basename $0` backup backup_path [restic_pruning_opts]" >&2                
                 echo "       `basename $0` mount all|backup|data" >&2
-                # echo "       `basename $0` raidcheck" >&2
-                echo "       `basename $0` show log|softraid|volumes" >&2
-                echo "       `basename $0` show snapshot snapshot_id" >&2
+                echo "       `basename $0` check" >&2
+                echo "       `basename $0` show log|volumes" >&2
+                echo "       `basename $0` show snapshot snapshot_id [primary|secondary]" >&2
                 echo "       `basename $0` show snapshots [primary|secondary]" >&2
                 echo "       `basename $0` unmount all|backup|data" >&2
                 exit 1

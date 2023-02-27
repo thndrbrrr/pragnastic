@@ -1,14 +1,16 @@
+SHELL=/usr/local/bin/oksh
+
 ################################################################################################
 # PraNAStic data backup (24/7 every 10 mins)
-0-50/10 * * * *  /usr/local/sbin/pragnastic backup "/vol/storage/data" "--keep-last 7 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y" >>/var/log/pragnastic 2>&1
+0-50/10 * * * *  /usr/local/sbin/pragnastic backup "/vol/storage/data /vol/storage/data/shared" "--keep-last 6 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y" >>/var/log/pragnastic 2>&1
 
 # or to skip data backup between 2am and 6am:
-# 0-50/10 6-23,0-1 * * *  /usr/local/sbin/pragnastic backup "/vol/storage/data" "--keep-last 7 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y" >>/var/log/pragnastic 2>&1
+# 0-50/10 6-23,0-1 * * *  /usr/local/sbin/pragnastic backup "/vol/storage/data /vol/storage/data/shared" "--keep-last 6 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y" >>/var/log/pragnastic 2>&1
 
 # PragNAStic daily system backup at 3:05am
 5 3 * * *  /usr/local/sbin/pragnastic backup "/etc /root /home /usr/local/bin /usr/local/etc /usr/local/libexec /usr/local/sbin /var" "--keep-within-daily 30d" >>/var/log/pragnastic 2>&1
 
 # PragNAStic RAID status check every minute
 # TODO - update RAID / status check
-#* * * * * /usr/local/sbin/pragnastic raidcheck 1>/dev/null 2>>/var/log/pragnastic
+#* * * * * /usr/local/sbin/pragnastic check 1>/dev/null 2>>/var/log/pragnastic
 ################################################################################################

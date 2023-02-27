@@ -1,0 +1,28 @@
+#!/usr/bin/env oksh
+
+. /etc/pragnastic/pragnastic.conf
+. /etc/pragnastic/pragnastic.subr
+
+PREV_MSG_HASH_FILE=/tmp/`basename $0`.prev.msg.hash
+
+notify_without_dupes() { # params: msg
+    msg=$1
+    msg_hash=`echo $msg | sha256`
+    
+    [ -e $PREV_MSG_HASH_FILE ] && previous_msg_hash=`cat $PREV_MSG_HASH_FILE`
+    if [ "$msg_hash" != "$previous_msg_hash" ]; then
+        notify "$msg"
+        echo $msg_hash >$PREV_MSG_HASH_FILE
+    else
+        log "$msg"
+    fi
+}
+
+zpool_status=`zpool status -x`
+if [ "$zpool_status" != "all pools are healthy" ]; then
+    zpool_details=`zpool status -v`
+    notify_without_dupes "[WARNING] ZFS pool health\n$zpool_details" >&2; exit 1;
+fi
+
+rm -f $PREV_MSG_HASH_FILE
+log "ZFS pool status: $zpool_status"

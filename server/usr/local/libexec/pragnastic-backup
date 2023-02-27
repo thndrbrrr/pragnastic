@@ -42,7 +42,7 @@ if [ -e $LOCKFILE ] ; then
     fi
 fi
 
-# Safety check: if we're running a backup on /vol/data make sure that there's something in there.
+# Safety check: when running a backup on the data mountpoint ensure that there's something in there.
 if [[ "$BACKUP_PATH" == "$data_mountpoint" && `ls -1 $data_mountpoint | wc -l | bc` == "0" ]]; then
     notify "[$PID] [ERROR] refusing to backup $BACKUP_PATH: directory is empty"
     exit 130
