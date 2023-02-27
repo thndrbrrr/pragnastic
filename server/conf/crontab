@@ -11,6 +11,5 @@ SHELL=/usr/local/bin/oksh
 5 3 * * *  /usr/local/sbin/pragnastic backup "/etc /root /home /usr/local/bin /usr/local/etc /usr/local/libexec /usr/local/sbin /var" "--keep-within-daily 30d" >>/var/log/pragnastic 2>&1
 
 # PragNAStic RAID status check every minute
-# TODO - update RAID / status check
-#* * * * * /usr/local/sbin/pragnastic check 1>/dev/null 2>>/var/log/pragnastic
+* * * * * /usr/local/sbin/pragnastic check 1>/dev/null 2>>/var/log/pragnastic
 ################################################################################################
