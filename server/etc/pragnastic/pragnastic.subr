@@ -20,5 +20,7 @@ exists() { # param: path
 }
 
 error() {
-    [ $? != 0 ]
+    _last_exit_code=$?
+    echo "exit code: $_last_exit_code"
+    [ $_last_exit_code != 0 ]
 }
