@@ -55,5 +55,9 @@ fi
 
 # Show volumes
 if [ "$1" == "volumes" ]; then
-    df -h | egrep Filesystem\|^$storage_pool\|^$backup0_pool\|^$backup1_pool && echo && zpool list $storage_pool $backup0_pool $backup1_pool && echo && zpool status $storage_pool $backup0_pool $backup1_pool
+    df -h | egrep Filesystem\|^$storage_pool\|^$backup0_pool\|^$backup1_pool && \
+    echo && \
+    zpool list $storage_pool $backup0_pool $backup1_pool && \
+    echo && \
+    zpool status -sv $storage_pool $backup0_pool $backup1_pool
 fi

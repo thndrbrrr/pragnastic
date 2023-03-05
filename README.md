@@ -53,11 +53,11 @@ Users have access to their own network drive, a shared network drive, and a *Syn
     - backups are incremental
     - backup repos are pruned after every backup run
 - backup retention for data
-    - all 10 min snapshots within the last hour
-    - all hourly snapshots within the last 24h
-    - all daily snapshots within the last week
-    - all weekly snapshots within the last month
-    - all monthly snapshots within the last year
+    - all 10 min snapshots for the past hour
+    - hourly snapshots for the past 24h
+    - daily snapshots for the past week
+    - weekly snapshots for the past month
+    - monthly snapshots for the past year
     - all yearly snapshots
 - backup retention for server directories: last 30 daily backups
 
