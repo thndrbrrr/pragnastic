@@ -1,0 +1,4 @@
+include common
+
+root = C:/Users/Alice/SyncDrive
+root = ssh://alice@example.com//vol/data/alice/syncdrive

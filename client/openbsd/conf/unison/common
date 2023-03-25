@@ -1,0 +1,19 @@
+log = true
+
+ignore = Name *~
+ignore = Name *.swp
+ignore = Name *.lock
+ignore = Name .DS_Store
+ignore = Name *.py.class
+ignore = Name *.blend1
+ignore = Name *.part
+ignore = Name .*Thumbs.db
+ignore = Name Trash
+ignore = Name *.Trash*
+ignore = Name .fseventsd*
+ignore = Name .Spotlight-*
+ignore = Name lost+found
+ignore = Name backups.backupdb
+ignore = Name node_modules
+ignore = Name __pycache__
+ignore = Name __pypackages__

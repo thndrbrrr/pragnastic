@@ -1,0 +1,125 @@
+#!/bin/ksh
+
+. /etc/pragnastic/pragnastic.conf
+. /etc/pragnastic/pragnastic.subr
+
+PID=$$
+BACKUP_PATH=`echo "${1%/}"`  # strip any trailing path separator
+[ -n "$BACKUP_PATH" ] || { echo "usage: `basename $0` backup_path [unison_pruning_opts]" >&2; exit 1; }
+FORGET_OPTS=$2
+
+LOCKFILE=/tmp/pragnastic-backup-`echo $BACKUP_PATH | md5`.lock
+
+unlock_and_exit() { # param: exit_code
+    rm -f $LOCKFILE
+    exit $1
+}
+
+backup() { # params: path
+    # Add option --quiet if this is too much information
+    $restic_executable backup $BACKUP_PATH $backup_opts --repo $1 --password-file $backup_repo_passwdfile --exclude-file=$backup_exlude_file && \
+    $restic_executable check --repo $1 --password-file $backup_repo_passwdfile --quiet
+}
+
+prune_backup() { # param: backup_repo_path
+    for single_backup_path in $BACKUP_PATH; do
+        $restic_executable forget --prune --path $single_backup_path $FORGET_OPTS --repo $1 --password-file $backup_repo_passwdfile --quiet
+    done
+}
+
+copy_snapshots() { # params: from_repo_path to_repo_path
+    $restic_executable copy --from-repo $1 --from-password-file $backup_repo_passwdfile --repo $2 --password-file $backup_repo_passwdfile --quiet
+}
+
+if [ -e $LOCKFILE ] ; then
+    lockfile_age=$((`date +%s` - `stat -f "%m" $LOCKFILE`))
+    if [[ $lockfile_age -gt  $backup_lockfile_age_notification_threshold ]] ; then
+        notify "[$PID] [WARNING] skipped backup of $BACKUP_PATH, lockfile `basename $LOCKFILE` already exists (age: $(($lockfile_age / 60))m)"
+        exit 129
+    else
+        log "[$PID] [WARNING] skipped backup of $BACKUP_PATH, lockfile `basename $LOCKFILE` already exists"
+        exit 128
+    fi
+fi
+
+# Safety check: if we're running a backup on /vol/data make sure that there's something in there.
+if [[ "$BACKUP_PATH" == "$data_mountpoint" && `ls -1 $data_mountpoint | wc -l | bc` == "0" ]]; then
+    notify "[$PID] [ERROR] refusing to backup $BACKUP_PATH: directory is empty"
+    exit 130
+fi
+
+touch $LOCKFILE
+
+# Backup
+log "[$PID] backing up $BACKUP_PATH"
+if exists $primary_backup_repo; then
+    backup $primary_backup_repo && log "[$PID] primary backup of $BACKUP_PATH completed OK"
+    if error ; then
+        log "[$PID] [WARNING] primary backup failed, attempting secondary backup"
+        backup $secondary_backup_repo && log "[$PID] secondary backup of $BACKUP_PATH completed OK"
+        if error ; then
+            notify "[$PID] [ERROR] primary and secondary backups failed"
+            unlock_and_exit 1
+        fi
+    fi
+elif exists $secondary_backup_repo ; then
+    log "[$PID] [WARNING] primary backup unavailable, attempting secondary backup"
+    backup $secondary_backup_repo && log "[$PID] secondary backup of $BACKUP_PATH completed OK"
+    if error ; then
+        notify "[$PID] [ERROR] primary backup unavailable and secondary backup failed"
+        unlock_and_exit 2
+    fi
+else
+    notify "[$PID] [ERROR] primary and secondary backups unavailable"
+    unlock_and_exit 3
+fi
+
+# Prune backup snapshots
+if [ -n "$FORGET_OPTS" ]; then
+    log "[$PID] pruning previous snapshots of $BACKUP_PATH with policy \"$FORGET_OPTS\""
+    if exists $primary_backup_repo ; then
+        prune_backup $primary_backup_repo && log "[$PID] primary backup pruned OK"
+        if error ;  then
+            log "[$PID] [WARNING] pruning primary backup failed"
+        fi
+    else
+        log "[$PID] [WARNING] primary backup unavailable for pruning"
+    fi
+    if exists $secondary_backup_repo ; then
+        prune_backup $secondary_backup_repo && log "[$PID] secondary backup pruned OK"
+        if error ;  then
+            log "[$PID] [WARNING] pruning secondary backup failed"
+        fi
+    else
+        log "[$PID] [WARNING] secondary backup unavailable for pruning"
+    fi
+else
+    log "[$PID] skipped pruning: no pruning options were provided"
+fi
+
+# Sync backup repos
+if exists $primary_backup_repo && exists $secondary_backup_repo ; then
+    log "[$PID] syncing backup repos $primary_backup_repo and $secondary_backup_repo"
+    copy_snapshots $primary_backup_repo $secondary_backup_repo && log "[$PID] primary to secondary backup sync OK"
+    if error ; then
+        _primary_backup_repo_to_secondary_backup_repo_failed=true
+        log "[$PID] [WARNING] primary to secondary backup sync failed"
+    fi
+    copy_snapshots $secondary_backup_repo $primary_backup_repo && log "[$PID] secondary to primary backup sync OK"
+    if error ; then
+        _secondary_backup_repo_to_primary_backup_repo_failed=true
+        log "[$PID] [WARNING] secondary to primary backup sync failed"
+    fi
+    if [[ -n $_primary_backup_repo_to_secondary_backup_repo_failed && -n $_secondary_backup_repo_to_primary_backup_repo_failed ]] ; then
+        notify "[$PID] [ERROR] all backup syncs failed"
+        unlock_and_exit 4
+    fi
+else
+    _unavailable_backups=""
+    exists $primary_backup_repo || _unavailable_backups=", primary backup unavailable"
+    exists $secondary_backup_repo || _unavailable_backups=$_unavailable_backups", secondary backup unavailable"
+    log "[$PID] [WARNING] backup sync skipped$_unavailable_backups"
+fi
+
+log "[$PID] `basename $0` completed OK, done"
+rm $LOCKFILE
