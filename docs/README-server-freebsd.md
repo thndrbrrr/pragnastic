@@ -25,7 +25,7 @@ PragNAStic sends notifications when things misbehave. On FreeBSD the scripts use
 
 ## System config
 
-SSH is needed so that Windows and MacOS clients can mount file systems, and Unison uses SSH as well for transport. `ntpd` should also be running for accurate timekeeping and reliable file server operations. It helps ensure that file modification times are correct, logging and auditing are accurate, and synchronization tasks are on time. The services `zfs` service and `zfskeys` (provides encryption support) need to be runnning for everything ZFS:
+SSH is needed so that Windows and MacOS clients can mount file systems, and Unison uses SSH as well for transport. `ntpd` should also be running for accurate timekeeping and reliable file server operations. It helps ensure that file modification times are correct, logging and auditing are accurate, and that cron jobs are on time. The services `zfs` service and `zfskeys` (provides encryption support) need to be runnning for everything ZFS:
 
 ```sh
 service sshd enable
@@ -34,22 +34,64 @@ service zfs enable
 service zfskeys enable
 ```
 
+## Install PragNAStic
+
+The easiest way to install PragNAStic is to use the `install.sh` script. It will ask for the backup repository password, the `storage` pool password, and where to send email notifications to, and will then put all scripts and config files in the right locations.
+
+```sh
+git clone https://github.com/thndrbrrr/pragnastic
+cd pragnastic/server/freebsd
+./install.sh
+```
+
+### Cron jobs
+
+Three cron jobs are needed to run PragNAStic:
+
+- data backup job, running every 10 minutes
+- server backup job, running once nightly
+- ZFS pool status check, running every minute
+
+Sample entries can be found in `server/freebsd/conf/crontab`, and if you've installed PragNAStic in the default location and are using PragNAStic's default location `/vol` for mounting drives then you can just copy-paste that into `root`'s `crontab`, or append it like so:
+
+```sh
+# pipe current crontab into a temporary file
+$ doas crontab -l >tmp_crontab
+
+# append PragNAStic cron jobs
+$ cat server/conf/crontab >>tmp_crontab
+
+# install updated crontab
+$ doas cronab tmp_crontab
+```
+
+**Note:** It is recommended to install the cron jobs only once you've verified that things are working as expected. Therefore read on through the usage section below, mount the drives, perform a backup as well as a status check using the `pragnastic` command, and *then* install the cron jobs.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Disk management with ZFS
 
-The FreeBSD version of PragNAStic uses ZFS. In fact, this FreeBSD version only exists because OpenBSD doesn't support ZFS. However, the advantages of ZFS are hard to ignore when building a NAS: ZFS is designed to ensure data integrity, even in the face of hardware failures or other types of corruption. It uses checksums to detect and correct errors in data, and can automatically repair corrupted data using redundant copies of data stored on other disks. This little extra layer of protection can help ensure that your data remains secure and usable even when using external USB drives, which often lack SMART diagnostics.
+Initially, PragNAStic was developed for OpenBSD, but later it was updated to work with FreeBSD, primarily to leverage the benefits of ZFS, which is not supported by OpenBSD.
 
-Another reason is data compression: ZFS includes built-in data compression, which will help save disk space and improve performance by reducing the amount of data that needs to be read from or written to disk.
+ZFS offers numerous benefits that make it an ideal choice for building a robust NAS: ZFS is designed to ensure data integrity, even in the face of hardware failures or other types of corruption. It uses checksums to detect and correct errors in data, and can automatically repair corrupted data using redundant copies of data stored on other disks. This little extra layer of protection can help ensure that your data remains secure and usable even when using external USB drives, which often lack SMART diagnostics. Another advantage is data compression: ZFS includes built-in data compression, which helps save disk space and improves performance by reducing the amount of data that needs to be read from or written to disk.
 
+Let's assume that your two data disks are `da1` and `da2`, and your backup disks are `da3` and `da4`. When you follow the instructions below you should end up a disk setup such as this:
 
-<!-- All disks will need to be formatted, some will be encrypted -->
+| Devices | ZFS pool[/dataset] | Mountpoint |
+|---|---|---|
+| `/dev/da1p1` and `/dev/da2p1` | `storage` | N/A |
+|  | `storage/data` | `/vol/storage/data` |
+|  | `storage/data/shared` | `/vol/storage/data/shared` |
+| `/dev/d3p1` | `backup0` | N/A |
+|  | `backup0/restic-repo` | `/vol/backup/backup0/restic-repo` |
+| `/dev/d4p1` | `backup1` | N/A |
+|  | `backup1/restic-repo` | `/vol/backup/backup1/restic-repo` |
 
+Note that your actual device numbers might be different and that, even if device names should change between reboots, ZFS will still recognize all pools and datasets.
 
-
-<!-- ### Data disks -->
 ### Data RAID
 
-Create a new partition table on the each data disk (`daX`) using the GPT (GUID Partition Table) scheme and add a new partition of type `freebsd-zfs`:
+Create a new partition table on the each data disk (`daX`, e.g. `da1` or `da2`) using the GPT (GUID Partition Table) scheme and add a new partition of type `freebsd-zfs`:
 
 ```sh
 gpart destroy -F daX
@@ -78,7 +120,7 @@ zfs hold safety_hold storage/data/shared@empty
 
 ### Backup volumes
 
-Similar to the data diska above, we create a new partition table on the each backup disk with a GUID partition table and add a partition of type `freebsd-zfs`:
+Similar to the data disk above, we create a new partition table on each backup disk with a GUID partition table and add a partition of type `freebsd-zfs`:
 
 ```sh
 gpart destroy -F daX
@@ -86,60 +128,25 @@ gpart create -s GPT daX
 gpart add -t freebsd-zfs -l backupY daX
 ```
 
-This command creates a new ZFS pool named backupY
-
-This command creates a new ZFS dataset named restic-repo inside the backupY pool. The -o flag sets the mountpoint property for the new dataset to /vol/backup/backupY/restic-repo, meaning that the dataset will be mounted at that location in the file system.
+We now create a ZFS pool named `backupY` in partition `daXp1`, and then a dataset named `restic-repo` in pool `backupY`. Like above, the mountpoint flags are set in a way that the pool itself is not mounted automatically, but the dataset will be mounted at `/vol/backup/backupY/restic-repo`.
 
 ```sh
 zpool create -O compression=zstd -O mountpoint=none backupY /dev/daXp1
 zfs create -o mountpoint=/vol/backup/backupY/restic-repo backupY/restic-repo
 ```
 
-The instructions below create one large partition on each backup disk. .......
-
-...
-
-
-
-## Install PragNAStic
-
-The easiest way to install PragNAStic is to use the `install.sh` script. 
-
-...... It will ask you some configuration questions, put all scripts and config files in the right locations, and setup your `/vol` directory. .....
-
-...
+Add snapshots and holds to prevent accidental deletion:
 
 ```sh
-# get PragNAStic
-git clone https://github.com/thndrbrrr/pragnastic
-cd ........
-
+zfs snapshot backup0@empty
+zfs snapshot backup1@empty
+zfs snapshot backup0/restic-repo@empty
+zfs snapshot backup1/restic-repo@empty
+zfs hold safety_hold backup0@empty
+zfs hold safety_hold backup1@empty
+zfs hold safety_hold backup0/restic-repo@empty
+zfs hold safety_hold backup1/restic-repo@empty
 ```
-
-### Cron jobs
-
-Three cron jobs are needed to run PragNAStic:
-
-- data backup job, running every 10 minutes
-- server backup job, running once nightly
-- RAID status check, running every minute
-
-Sample entries can be found in `server/conf/crontab`, and if you've installed PragNAStic in the default location and are using the default location `/vol` for mounting drives then you can just copy-paste that into `root`'s `crontab`, or append it like so:
-
-```sh
-# pipe current crontab into a temporary file
-$ doas crontab -l >tmp_crontab
-
-# append PragNAStic cron jobs
-$ cat server/conf/crontab >>tmp_crontab
-
-# install updated crontab
-$ doas cronab tmp_crontab
-```
-
-**Note:** It is recommended to install the cron jobs only once you've verified that things are working as expected. Therefore read on through the usage section below, mount the drives, perform a backup as well as a RAID check using the `pragnastic` command, and *then* install the cron jobs.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Usage
 
@@ -195,12 +202,6 @@ $ doas pragnastic unmount all
 # > /vol/backup1 unmounted OK
 ```
 ... 2BContinued ...
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-## Setting up clients
-
-SEE HERE
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
