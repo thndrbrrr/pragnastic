@@ -79,7 +79,7 @@ A few general notes:
 
 ### Server configuration
 
-The server-side part of PragNAStic can be run on FreeBSD or OpenBSD, with slight nuances in how data volumes are managed: on **FreeBSD** ZFS is used with a mirrored RAID 1 for data, and on **OpenBSD** RAID 1 mirroring is achieved using softraid.
+The server-side part of PragNAStic can be run on FreeBSD or OpenBSD, with slight nuances in how data volumes are managed: on **FreeBSD** ZFS is used with a mirrored RAID 1 for data, and on **OpenBSD** RAID 1 mirroring is achieved using softraid. If you have the choice: go with the FreeBSD/ZFS combo.
 
 - [Server setup with FreeBSD](docs/README-server-freebsd.md)
 - [Server setup with OpenBSD](docs/README-server-openbsd.md)
@@ -264,10 +264,9 @@ Distributed under the ISC license. See [`LICENSE`](LICENSE) for more information
 
 Mail: thndrbrrr@gmail.com
 
-Mastodon: [@torben@mastodon.sdf.org](https://mastodon.sdf.org/@torben)
+Mastodon: [@thndrbrrr@hachyderm.io](https://hachyderm.io/@thndrbrrr)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 ## Acknowledgments
 
@@ -280,6 +279,7 @@ In the end, everyone stands on the shoulders of giants.
 * [SSHFS](https://github.com/osxfuse/sshfs)
 * [SSHFS-Win](https://github.com/winfsp/sshfs-win)
 * [FreeBSD](https://www.freebsd.org/)
+* [OpenBSD](https://www.openbsd.org/)
 * [Stack Overflow](https://stackoverflow.com/)
 * [Reddit's /r/homelab](https://www.reddit.com/r/homelab/)
 * Readme based on a template by [Othneil Drew](https://github.com/othneildrew)
