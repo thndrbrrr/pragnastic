@@ -182,7 +182,7 @@ It's a good idea to provide a non-root user with permissions to run `pragnastic`
 echo "permit persist alice as root cmd pragnastic" >>/etc/doas.conf
 ```
 
-The `pragnastic` command can be used to:
+The `pragnastic` command focuses on ease of use and convenience and can be used to:
 
 - backup a directory and optionally prune backup repo
 - check status of data softraid
@@ -218,6 +218,103 @@ $ doas pragnastic mount all
 # > /dev/sd4a mounted on /vol/data OK
 ```
 
+Backup data directories:
+
+```sh
+$ doas pragnastic backup "/vol/data /vol/data/shared"
+# > 2023-04-02 10:17:00 [57232] backing up /vol/data /vol/data/shared
+# > repository 04d13d32 opened (repository version 2) successfully, password is correct
+# > using parent snapshot 88f32be3
+# > [...]
+# > snapshot 2a32ef52 saved
+# > 2023-04-02 10:17:21 [57232] primary backup of /vol/data /vol/data/shared completed OK
+# > 2023-04-02 10:17:21 [57232] skipped pruning: no pruning options were provided
+# > 2023-04-02 10:17:21 [57232] syncing backup repos /vol/backup0/restic-repo and /vol/backup1/restic-repo
+# > 2023-04-02 10:17:27 [57232] primary to secondary backup sync OK
+# > 2023-04-02 10:17:30 [57232] secondary to primary backup sync OK
+# > 2023-04-02 10:17:30 [57232] pragnastic-backup completed OK, done
+```
+
+Show status of the data RAID:
+
+```sh
+$ pragnastic show softraid
+# > 2023-04-02 10:17:21 [57232] data softraid status: online (sda4), OK
+```
+
+The `raidcheck` subcommand does pretty much the same, but if email notifications have been configured, this command will automatically send an alert email in the event of any issues - but only if the status has changed since the last check. Duplicate emails are thereby prevented:
+
+```sh
+$ pragnastic raidcheck
+# > 2023-04-02 10:17:21 [57232] data softraid status: online (sda4), OK
+```
+
+Show the PragNAStic log:
+
+```sh
+$ pragnastic show log
+# > showing last 100 lines of /var/log/pragnastic:
+# > [...]
+# > 2023-04-02 10:10:47 [57097] pragnastic-backup completed OK, done
+# > 2023-04-02 10:20:00 [57276] backing up /vol/data /vol/data/shared
+# > using parent snapshot 2a32ef52
+# > [...]
+# > snapshot b7b333ee saved
+# > 2023-04-02 10:20:21 [57276] primary backup of /vol/data /vol/data/shared completed OK
+# > 2023-04-02 10:20:21 [57276] pruning previous snapshots of /vol/data /vol/data/shared with policy "--keep-last 6 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y"
+# > 2023-04-02 10:20:28 [57276] primary backup pruned OK
+# > 2023-04-02 10:20:36 [57276] secondary backup pruned OK
+# > 2023-04-02 10:20:36 [57276] syncing backup repos /vol/backup0/restic-repo and /vol/backup1/restic-repo
+# > 2023-04-02 10:20:41 [57276] primary to secondary backup sync OK
+# > 2023-04-02 10:20:46 [57276] secondary to primary backup sync OK
+# > 2023-04-02 10:20:46 [57276] pragnastic-backup completed OK, done
+```
+
+Show all available backup snapshots (use `pragnastic show snapshots secondary` to show snapshots in the secondary backup repository):
+
+```sh
+$ doas pragnastic show snapshots
+# > showing snapshots of primary backup repository at /vol/backup0/restic-repo
+# > repository 04d13d32 opened (repository version 2) successfully, password is correct
+# > ID        Time                 Host            Tags        Paths
+# > -----------------------------------------------------------------------------------
+# > [...]
+# > b79740a4  2023-04-02 02:50:00  xyz.foogoo.net              /vol/data
+# >                                                            /vol/data/shared
+# > 
+# > 555ca64e  2023-04-02 03:05:00  xyz.foogoo.net              /etc
+# >                                                            /home
+# >                                                            /root
+# >                                                            /usr/local/bin
+# >                                                            /usr/local/etc
+# >                                                            /usr/local/libexec
+# >                                                            /usr/local/sbin
+# >                                                            /var
+# > 
+# > cacee42a  2023-04-02 03:50:00  xyz.foogoo.net              /vol/data
+# >                                                            /vol/data/shared
+# > [...]
+# > b7b333ee  2023-04-02 10:20:00  xyz.foogoo.net              /vol/data
+# >                                                            /vol/data/shared
+# > 
+# > 8c8204a4  2023-04-02 10:30:00  xyz.foogoo.net              /vol/data
+# >                                                            /vol/data/shared
+# > -----------------------------------------------------------------------------------
+# > 73 snapshots
+```
+
+Inspect a specific snapshot:
+
+```sh
+$ doas pragnastic show snapshot 8c8204a4
+# > snapshot 8c8204a4 of [/vol/data /vol/data/shared] filtered by [] at 2023-04-02 10:30:00.044766738 -0700 PDT):
+# > /vol
+# > /vol/data
+# > /vol/data/bob
+# > /vol/data/bob/netdrive
+# > /vol/data/bob/netdrive/somefile.txt
+# > [...]
+```
 Unmount all drives:
 
 ```sh

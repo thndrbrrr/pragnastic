@@ -184,7 +184,7 @@ It's a good idea to provide a non-root user with permissions to run `pragnastic`
 echo "permit persist alice as root cmd pragnastic" >>/etc/doas.conf
 ```
 
-The `pragnastic` command can be used to:
+The `pragnastic` command focuses on ease of use and convenience and can be used to:
 
 - backup a directory and optionally prune backup repo
 - check status of data softraid
@@ -194,6 +194,8 @@ The `pragnastic` command can be used to:
   - remaining free space on disks 
   - list of snapshots in a backup repo
   - contents of a snapshot
+
+Subcommands `backup`, `mount`, `show snapshots`, `show snapshot` and `unmount` require superuser privileges and should therefore be run with `doas`. Mounting and unmounting shouldn't be necessary as that's handled by ZFS at startup time.
 
 ```sh
 $ pragnastic
@@ -206,7 +208,148 @@ $ pragnastic
 # >        pragnastic unmount all|backup|data
 ```
 
-... 2BContinued ...
+Backup data directories:
+
+```sh
+$ doas pragnastic backup "/vol/storage/data /vol/storage/data/shared"
+# > 2023-04-02 10:17:00 [57232] backing up /vol/storage/data /vol/storage/data/shared
+# > repository 04d13d32 opened (repository version 2) successfully, password is correct
+# > using parent snapshot 88f32be3
+# > [...]
+# > snapshot 2a32ef52 saved
+# > 2023-04-02 10:17:21 [57232] primary backup of /vol/storage/data /vol/storage/data/shared completed OK
+# > 2023-04-02 10:17:21 [57232] skipped pruning: no pruning options were provided
+# > 2023-04-02 10:17:21 [57232] syncing backup repos /vol/backup/backup0/restic-repo and /vol/backup/backup1/restic-repo
+# > 2023-04-02 10:17:27 [57232] primary to secondary backup sync OK
+# > 2023-04-02 10:17:30 [57232] secondary to primary backup sync OK
+# > 2023-04-02 10:17:30 [57232] pragnastic-backup completed OK, done
+```
+
+You can check the status of all volumes. If email notifications have been configured, this command will automatically send an alert email in the event of any issues, but only if the status has changed since the last check. Duplicate emails are thereby prevented:
+
+```sh
+$ pragnastic check
+# > 2023-04-02 10:26:25 ZFS pool status: all pools are healthy
+```
+
+Show the PragNAStic log:
+
+```sh
+$ pragnastic show log
+# > showing last 100 lines of /var/log/pragnastic:
+# > [...]
+# > 2023-04-02 10:10:47 [57097] pragnastic-backup completed OK, done
+# > 2023-04-02 10:20:00 [57276] backing up /vol/storage/data /vol/storage/data/shared
+# > using parent snapshot 2a32ef52
+# > [...]
+# > snapshot b7b333ee saved
+# > 2023-04-02 10:20:21 [57276] primary backup of /vol/storage/data /vol/storage/data/shared completed OK
+# > 2023-04-02 10:20:21 [57276] pruning previous snapshots of /vol/storage/data /vol/storage/data/shared with policy "--keep-last 6 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y"
+# > 2023-04-02 10:20:28 [57276] primary backup pruned OK
+# > 2023-04-02 10:20:36 [57276] secondary backup pruned OK
+# > 2023-04-02 10:20:36 [57276] syncing backup repos /vol/backup/backup0/restic-repo and /vol/backup/backup1/restic-repo
+# > 2023-04-02 10:20:41 [57276] primary to secondary backup sync OK
+# > 2023-04-02 10:20:46 [57276] secondary to primary backup sync OK
+# > 2023-04-02 10:20:46 [57276] pragnastic-backup completed OK, done
+```
+
+`pragnastic show volumes` shows status information about the capacity and health of all relevant ZFS pools:
+
+```sh
+$ pragnastic show volumes
+# > Filesystem             Size    Used   Avail Capacity  Mounted on
+# > backup1/restic-repo    3.5T    591G    2.9T    16%    /vol/backup/backup1/restic-repo
+# > backup0/restic-repo    3.5T    591G    2.9T    16%    /vol/backup/backup0/restic-repo
+# > storage/data           1.7T    568G    1.2T    32%    /vol/storage/data
+# > storage/data/shared    500G     42G    458G     8%    /vol/storage/data/shared
+# > 
+# > NAME      SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+# > backup0  3.62T   591G  3.05T        -         -     0%    15%  1.00x    ONLINE  -
+# > backup1  3.62T   591G  3.05T        -         -     0%    15%  1.00x    ONLINE  -
+# > storage  1.81T   612G  1.22T        -         -     0%    32%  1.00x    ONLINE  -
+# > 
+# >   pool: backup0
+# >  state: ONLINE
+# >   scan: scrub repaired 0B in 02:06:17 with 0 errors on Sun Apr  2 05:11:54 2023
+# > config:
+# > 
+# > 	NAME        STATE     READ WRITE CKSUM  SLOW
+# > 	backup0     ONLINE       0     0     0     -
+# > 	  da2       ONLINE       0     0     0     0
+# > 
+# > errors: No known data errors
+# > 
+# >   pool: backup1
+# >  state: ONLINE
+# >   scan: scrub repaired 0B in 02:01:56 with 0 errors on Sat Apr  1 05:03:26 2023
+# > config:
+# > 
+# > 	NAME        STATE     READ WRITE CKSUM  SLOW
+# > 	backup1     ONLINE       0     0     0     -
+# > 	  da0       ONLINE       0     0     0     0
+# > 
+# > errors: No known data errors
+# > 
+# >   pool: storage
+# >  state: ONLINE
+# >   scan: scrub repaired 0B in 02:42:12 with 0 errors on Fri Mar 31 05:43:30 2023
+# > config:
+# > 
+# > 	NAME        STATE     READ WRITE CKSUM  SLOW
+# > 	storage     ONLINE       0     0     0     -
+# > 	  mirror-0  ONLINE       0     0     0     -
+# > 	    da3     ONLINE       0     0     0     0
+# > 	    da1     ONLINE       0     0     0     0
+# > 
+# > errors: No known data errors
+```
+
+Show all available backup snapshots (use `pragnastic show snapshots secondary` to show snapshots in the secondary backup repository):
+
+```sh
+$ doas pragnastic show snapshots
+# > showing snapshots of primary backup repository at /vol/backup/backup0/restic-repo
+# > repository 04d13d32 opened (repository version 2) successfully, password is correct
+# > ID        Time                 Host            Tags        Paths
+# > -----------------------------------------------------------------------------------
+# > [...]
+# > b79740a4  2023-04-02 02:50:00  xyz.foogoo.net              /vol/storage/data
+# >                                                            /vol/storage/data/shared
+# > 
+# > 555ca64e  2023-04-02 03:05:00  xyz.foogoo.net              /etc
+# >                                                            /home
+# >                                                            /root
+# >                                                            /usr/local/bin
+# >                                                            /usr/local/etc
+# >                                                            /usr/local/libexec
+# >                                                            /usr/local/sbin
+# >                                                            /var
+# > 
+# > cacee42a  2023-04-02 03:50:00  xyz.foogoo.net              /vol/storage/data
+# >                                                            /vol/storage/data/shared
+# > [...]
+# > b7b333ee  2023-04-02 10:20:00  xyz.foogoo.net              /vol/storage/data
+# >                                                            /vol/storage/data/shared
+# > 
+# > 8c8204a4  2023-04-02 10:30:00  xyz.foogoo.net              /vol/storage/data
+# >                                                            /vol/storage/data/shared
+# > -----------------------------------------------------------------------------------
+# > 73 snapshots
+```
+
+Inspect a specific snapshot:
+
+```sh
+$ doas pragnastic show snapshot 8c8204a4
+# > snapshot 8c8204a4 of [/vol/storage/data /vol/storage/data/shared] filtered by [] at 2023-04-02 10:30:00.044766738 -0700 PDT):
+# > /vol
+# > /vol/storage
+# > /vol/storage/data
+# > /vol/storage/data/bob
+# > /vol/storage/data/bob/netdrive
+# > /vol/storage/data/bob/netdrive/somefile.txt
+# > [...]
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
