@@ -19,6 +19,8 @@ pkg install msmtp
 pkg install oksh
 ```
 
+The `oksh` package in FreeBSD is an implementation of the OpenBSD Korn shell. Since PragNAStic was originally conceived for OpenBSD, rather than rewriting the scripts to work with the different shell, using the `oksh` package allows the scripts to continue running on FreeBSD with minimal modification. This is because oksh is an implementation of the OpenBSD Korn shell, which is similar enough to the original shell used in the scripts to maintain compatibility.
+
 ## Mail setup
 
 PragNAStic sends notifications when things misbehave. On FreeBSD the scripts use `msmtp` rather than `sendmail`, because `msmtp` is much simpler to use and configure.
@@ -148,6 +150,32 @@ zfs hold safety_hold backup0/restic-repo@empty
 zfs hold safety_hold backup1/restic-repo@empty
 ```
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## Adding users
+
+For PragNAStic users, it is necessary to create a directory with the user's name under `/vol/storage/data`. The created directory should be owned by the user and the user's group:
+
+```sh
+adduser alice
+mkdir /vol/storage/data/alice
+chown alice:alice /vol/storage/data/alice
+```
+
+### Shared data
+
+`/vol/storage/data/shared` serves as a place where shared data between users can be kept. In the example below we create a Unix group called `shared` that users `bob` and `alice` are members of, and then update the permissions of `/vol/storage/data/shared` so that both users can read and write to it, but others cannot:
+
+```sh
+pw groupadd shared
+pw groupmod shared -m bob
+pw groupmod shared -m alice
+chgrp shared /vol/storage/data/shared
+chmod 770 /vol/storage/data/shared
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Usage
 
 It's a good idea to provide a non-root user with permissions to run `pragnastic` using `doas`:
@@ -169,38 +197,15 @@ The `pragnastic` command can be used to:
 
 ```sh
 $ pragnastic
-# > usage: pragnastic backup backup_path [unison_pruning_opts]
+# > usage: pragnastic backup backup_path [restic_pruning_opts]
 # >        pragnastic mount all|backup|data
-# >        pragnastic raidcheck
-# >        pragnastic show log|softraid|volumes
-# >        pragnastic show snapshot snapshot_id
+# >        pragnastic check
+# >        pragnastic show log|volumes
+# >        pragnastic show snapshot snapshot_id [primary|secondary]
 # >        pragnastic show snapshots [primary|secondary]
 # >        pragnastic unmount all|backup|data
 ```
 
-Mount data drive and backup drives:
-
-```sh
-$ doas pragnastic mount all
-# > disk backup0 found at /dev/sd3a
-# > disk backup1 found at /dev/sd5a
-# > /dev/sd3a mounted on /vol/backup0 OK
-# > /dev/sd5a mounted on /vol/backup1 OK
-# > disk data0 found at /dev/sd1a
-# > disk data1 found at /dev/sd2a
-# > softraid /dev/sd4a created with chunks /dev/sd1a and /dev/sd2a
-# > /dev/sd4a mounted on /vol/data OK
-```
-
-Unmount all drives:
-
-```sh
-$ doas pragnastic unmount all
-# > /vol/data unmounted OK
-# > softraid sd4 detached OK
-# > /vol/backup0 unmounted OK
-# > /vol/backup1 unmounted OK
-```
 ... 2BContinued ...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

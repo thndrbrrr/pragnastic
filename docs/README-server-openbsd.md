@@ -149,6 +149,31 @@ $ doas crontab tmp_crontab
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Adding users
+
+For PragNAStic users, it is necessary to create a directory with the user's name under `/vol/data`. The created directory should be owned by the user and the user's group:
+
+```sh
+adduser alice
+mkdir /vol/data/alice
+chown alice:alice /vol/data/alice
+```
+
+### Shared data
+
+`/vol/data/shared` serves as a place where shared data between users can be kept. In the example below we create a Unix group called `shared` that users `bob` and `alice` are members of, and then update the permissions of `/vol/data/shared` so that both users can read and write to it, but others cannot:
+
+```sh
+groupadd shared
+usermod -G shared bob
+usermod -G shared alice
+mkdir /vol/data/shared
+chgrp shared /vol/data/shared
+chmod 770 /vol/data/shared
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Usage
 
 It's a good idea to provide a non-root user with permissions to run `pragnastic` using `doas`:
