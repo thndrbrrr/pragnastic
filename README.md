@@ -81,7 +81,7 @@ A few general notes:
 
 The server-side part of PragNAStic can be run on FreeBSD or OpenBSD, with slight nuances in how data volumes are managed: on **FreeBSD** ZFS is used with a mirrored RAID 1 for data, and on **OpenBSD** RAID 1 mirroring is achieved using softraid. If you have the choice: go with the FreeBSD/ZFS combo.
 
-- [Server setup with FreeBSD](docs/README-server-freebsd.md)
+- [Server setup with FreeBSD (recommended)](docs/README-server-freebsd.md)
 - [Server setup with OpenBSD](docs/README-server-openbsd.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

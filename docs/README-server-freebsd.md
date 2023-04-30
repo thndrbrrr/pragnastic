@@ -122,6 +122,8 @@ zfs hold safety_hold storage/data/shared@empty
 
 ### Backup volumes
 
+The backup part of PragNAStic uses two unencrypted single device ZFS pools to store backup data. Despite using single drive pools, backups are still kept redundant by maintaining two independent backup pools and syncing their data using Restic. The advantage of using unencrypted single drive ZFS pools is that they are easy to remove and attach to another system, making them easily accessible for recovery purposes, while allowing for efficient copying of the backup repository without having to copy the entire disk or needing to decrypt the disk.
+
 Similar to the data disk above, we create a new partition table on each backup disk with a GUID partition table and add a partition of type `freebsd-zfs`:
 
 ```sh

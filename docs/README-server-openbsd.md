@@ -324,7 +324,6 @@ $ doas pragnastic unmount all
 # > /vol/backup0 unmounted OK
 # > /vol/backup1 unmounted OK
 ```
-... 2BContinued ...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
