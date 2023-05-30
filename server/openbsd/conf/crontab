@@ -1,5 +1,5 @@
 ################################################################################################
-# PraNAStic data backup (24/7 every 10 mins)
+# PragNAStic data backup (24/7 every 10 mins)
 0-50/10 * * * *  /usr/local/sbin/pragnastic backup "/vol/data" "--keep-last 7 --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 100y" >>/var/log/pragnastic 2>&1
 
 # or to skip data backup between 2am and 6am:
